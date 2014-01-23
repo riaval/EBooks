@@ -1,17 +1,22 @@
 package ua.miratech.zhukov.domain;
 
+import java.util.Date;
+
 public class User {
 
-	private int id;
+	private long id;
 	private String email;
-	private String fullName;
-	private int role;
+	private String password;
+	private String firstName;
+	private String lastName;
+	private Date registrationDate;
+	Role role;
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
@@ -23,19 +28,43 @@ public class User {
 		this.email = email;
 	}
 
-	public String getFullName() {
-		return fullName;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
-	public int getRole() {
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public Date getRegistrationDate() {
+		return registrationDate;
+	}
+
+	public void setRegistrationDate(Date registrationDate) {
+		this.registrationDate = registrationDate;
+	}
+
+	public Role getRole() {
 		return role;
 	}
 
-	public void setRole(int role) {
+	public void setRole(Role role) {
 		this.role = role;
 	}
 }

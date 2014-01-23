@@ -11,26 +11,20 @@ import ua.miratech.zhukov.domain.User;
 import java.util.List;
 
 @Controller
-@RequestMapping("/users")
+@RequestMapping("/books/add/")
 public class HelloController {
 
 	@Autowired
-	private UserDAO userDAO;
+	UserDAO userDAO;
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String selectUser(ModelMap model) {
-		List<User> users = userDAO.getUsers();
+	public String printWelcome(ModelMap model) {
+		model.addAttribute("message", "Hello world!");
 
-		System.out.println(users.get(0).getRole());
-
+		List<User> users = userDAO.findAll();
 		model.addAttribute("users", users);
-		return "hello";
-	}
 
-	@RequestMapping(method = RequestMethod.POST)
-	public String createUser(ModelMap model) {
-
-		return "redirect:/users";
+		return "new_book";
 	}
 
 }
