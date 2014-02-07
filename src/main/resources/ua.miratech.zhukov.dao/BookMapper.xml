@@ -1,30 +1,124 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="ua.miratech.zhukov.dao.UserDAO">
+<mapper namespace="ua.miratech.zhukov.dao.BookDAO">
 
-    <resultMap id="userMap" type="ua.miratech.zhukov.domain.User" >
-        <id column="USER_ID" property="id" />
-        <result column="USER_EMAIL" property="email" />
-        <result column="USER_PASSWORD" property="password" />
-        <result column="USER_FIRST_NAME" property="firstName" />
-        <result column="USER_LAST_NAME" property="lastName" />
-        <result column="REGISTRATION_DATE" property="registrationDate" />
-        <association property="role" resultMap="roleMap"/>
+    <resultMap id="bookMap" type="ua.miratech.zhukov.dto.Book">
+        <id column="BOOK_ID" property="id" />
+        <result column="AUTHOR" property="author" />
+        <result column="TITLE" property="title" />
+        <result column="PUB_DATE" property="publicationDate" />
+        <result column="FILE_NAME" property="fileName" />
+        <result column="BOOK_SIZE" property="size" javaType="java.lang.Long" />
+        <result column="PATH" property="path" />
+        <result column="SHA1" property="sha1" />
+        <result column="EMAIL" property="owner" />
+        <result column="LANGUAGE_NAME" property="language" />
+        <result column="BOOK_TYPE_NAME" property="extension" />
+        <result column="ANNOTATION" property="annotation" />
+        <result column="ISBN" property="isbn" />
+        <result column="SHARED_TYPE_NAME" property="sharedType" />
+        <collection column="GENRE_NAME" property="genres" javaType="ArrayList" ofType="String"/>
     </resultMap>
 
-    <resultMap id="roleMap" type="ua.miratech.zhukov.domain.Role">
-        <id column="ROLE_ID" property="id" />
-        <result column="ROLE_NAME" property="name" />
-    </resultMap>
-
-    <select id="findAll" resultMap="userMap">
+    <select id="getMyBooks" resultMap="bookMap">
         SELECT
-            USER_ID, USER_EMAIL, USER_PASSWORD, USER_FIRST_NAME, USER_LAST_NAME, REGISTRATION_DATE, u1.ROLE_ID, ROLE_NAME
+          GENRE_NAME,
+          BOOK_ID,
+          AUTHOR,
+          TITLE,
+          PUB_DATE,
+          FILE_NAME,
+          BOOK_SIZE,
+          PATH,
+          SHA1,
+          EMAIL,
+          LANGUAGE_NAME,
+          BOOK_TYPE_NAME,
+          ANNOTATION,
+          ISBN,
+          SHARED_TYPE_NAME
         FROM
-            USERS u1
-                INNER JOIN
-            ROLES r1
-                ON u1.ROLE_ID = r1.ROLE_ID
+          BOOKS
+        INNER JOIN
+          USERS
+            ON BOOKS.ID_OWNER = USERS.USER_ID
+        INNER JOIN
+          LANGUAGES
+            ON BOOKS.ID_LANG = LANGUAGES.LANGUAGE_ID
+        INNER JOIN
+          BOOK_TYPES
+            ON BOOKS.ID_BOOK_TYPE = BOOK_TYPES.BOOK_TYPE_ID
+        INNER JOIN
+          SHARED_TYPES
+            ON BOOKS.ID_SHARED_TYPE = SHARED_TYPES.SHARED_TYPE_ID
+        INNER JOIN
+          BOOKS_GENRES
+            ON BOOKS.BOOK_ID = BOOKS_GENRES.BOOK_ID
+        INNER JOIN
+          GENRES
+            ON BOOKS_GENRES.GENRE_ID = GENRES.GENRE_ID
+        WHERE
+          EMAIL = #{userEmail}
+        ORDER BY BOOKS.PUB_DATE ${orderBy}
     </select>
+
+    <select id="getBookById" resultMap="bookMap">
+        SELECT
+          BOOK_ID,
+          AUTHOR,
+          TITLE,
+          PUB_DATE,
+          FILE_NAME,
+          BOOK_SIZE,
+          PATH,
+          SHA1,
+          EMAIL,
+          LANGUAGE_NAME,
+          BOOK_TYPE_NAME,
+          ANNOTATION,
+          ISBN,
+          SHARED_TYPE_NAME
+        FROM
+          BOOKS
+        INNER JOIN
+          USERS
+            ON BOOKS.ID_OWNER = USERS.USER_ID
+        INNER JOIN
+          LANGUAGES
+            ON BOOKS.ID_LANG = LANGUAGES.LANGUAGE_ID
+        INNER JOIN
+          BOOK_TYPES
+            ON BOOKS.ID_BOOK_TYPE = BOOK_TYPES.BOOK_TYPE_ID
+        INNER JOIN
+          SHARED_TYPES
+            ON BOOKS.ID_SHARED_TYPE = SHARED_TYPES.SHARED_TYPE_ID
+        WHERE
+          BOOK_ID = #{id}
+    </select>
+
+    <select id="addBook" parameterType="ua.miratech.zhukov.dto.Book" statementType="CALLABLE">
+        {#{id,javaType=Long,jdbcType=NUMERIC,mode=OUT} = call  INSERT_BOOK(
+             #{author}
+            ,#{title}
+            ,#{publicationDate}
+            ,#{fileName}
+            ,#{size,javaType=LONG}
+            ,#{path}
+            ,#{sha1}
+            ,#{owner}
+            ,#{language}
+            ,#{extension}
+            ,#{annotation}
+            ,#{isbn}
+            ,#{sharedType}
+          )
+       }
+    </select>
+
+    <select id="addGenre" parameterType="ua.miratech.zhukov.dto.Book" statementType="CALLABLE">
+      INSERT INTO BOOKS_GENRES (BOOK_ID, GENRE_ID) VALUES (#{userId}, GET_GENRE_ID_BY_NAME(#{genreName}))
+    </select>
+
+
 
 </mapper>

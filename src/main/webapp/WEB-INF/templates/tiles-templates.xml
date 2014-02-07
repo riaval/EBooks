@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+        "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+        "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+
+<tiles-definitions>
+
+    <definition name="template-main" template="/WEB-INF/pages/template.jsp">
+        <put-attribute name="content" value=""/>
+        <put-attribute name="search" value=""/>
+        <put-attribute name="upload" value=""/>
+        <put-attribute name="myBooks" value=""/>
+        <put-attribute name="shared" value=""/>
+        <put-attribute name="jobs" value=""/>
+    </definition>
+
+    <definition name="index-tiles" extends="template-main">
+        <put-attribute name="content" value="/WEB-INF/pages/index.jsp"/>
+        <put-attribute name="title" value="Ebooks — Main"/>
+    </definition>
+
+    <definition name="upload-tiles" extends="template-main">
+        <put-attribute name="content" value="/WEB-INF/pages/upload.jsp"/>
+        <put-attribute name="title" value="Ebooks — Upload books"/>
+        <put-attribute name="upload" value="active"/>
+    </definition>
+
+    <definition name="mybooks-tiles" extends="template-main">
+        <put-attribute name="content" value="/WEB-INF/pages/my_books.jsp"/>
+        <put-attribute name="title" value="Ebooks — My books"/>
+        <put-attribute name="myBooks" value="active"/>
+    </definition>
+
+    <definition name="read-page-tiles" extends="template-main">
+        <put-attribute name="content" value="/WEB-INF/pages/read_page.jsp"/>
+        <put-attribute name="title" value="read"/>
+    </definition>
+
+    <definition name="sign-in-tiles" extends="template-main">
+        <put-attribute name="content" value="/WEB-INF/pages/login.jsp"/>
+        <put-attribute name="title" value="Sign in"/>
+    </definition>
+
+    <definition name="jobs-tiles" extends="template-main">
+        <put-attribute name="content" value="/WEB-INF/pages/jobs.jsp"/>
+        <put-attribute name="title" value="Jobs"/>
+        <put-attribute name="jobs" value="active"/>
+    </definition>
+
+    <definition name="search-tiles" extends="template-main">
+        <put-attribute name="content" value="/WEB-INF/pages/search.jsp"/>
+        <put-attribute name="title" value="Search"/>
+        <put-attribute name="search" value="active"/>
+    </definition>
+
+</tiles-definitions>
