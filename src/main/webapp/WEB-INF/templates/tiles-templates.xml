@@ -5,7 +5,7 @@
 
 <tiles-definitions>
 
-    <definition name="template-main" template="/WEB-INF/pages/template.jsp">
+    <definition name="template-main" template="/WEB-INF/pages/_template.jsp">
         <put-attribute name="content" value=""/>
         <put-attribute name="search" value=""/>
         <put-attribute name="upload" value=""/>
@@ -26,19 +26,24 @@
     </definition>
 
     <definition name="mybooks-tiles" extends="template-main">
-        <put-attribute name="content" value="/WEB-INF/pages/my_books.jsp"/>
+        <put-attribute name="content" value="/WEB-INF/pages/myBooks.jsp"/>
         <put-attribute name="title" value="Ebooks — My books"/>
         <put-attribute name="myBooks" value="active"/>
     </definition>
 
     <definition name="read-page-tiles" extends="template-main">
-        <put-attribute name="content" value="/WEB-INF/pages/read_page.jsp"/>
+        <put-attribute name="content" value="/WEB-INF/pages/readBook.jsp"/>
         <put-attribute name="title" value="read"/>
     </definition>
 
     <definition name="sign-in-tiles" extends="template-main">
         <put-attribute name="content" value="/WEB-INF/pages/login.jsp"/>
-        <put-attribute name="title" value="Sign in"/>
+        <put-attribute name="title" value="Log in"/>
+    </definition>
+
+    <definition name="sign-up-tiles" extends="template-main">
+        <put-attribute name="content" value="/WEB-INF/pages/signup.jsp"/>
+        <put-attribute name="title" value="Sign up"/>
     </definition>
 
     <definition name="jobs-tiles" extends="template-main">

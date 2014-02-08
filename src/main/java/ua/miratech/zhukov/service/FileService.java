@@ -1,6 +1,7 @@
 package ua.miratech.zhukov.service;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -18,6 +19,7 @@ import ua.miratech.zhukov.util.UploadedFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
@@ -34,7 +36,7 @@ public class FileService {
 	private JobsService jobsService;
 
 	private static final String FILE_DIRECTORY = "D:/EBOOKS_STORAGE/MAIN_CATALOGUE/";
-	private static final String DEFAULT_SHARED_TYPE = "private";
+	private static final String DEFAULT_SHARED_TYPE = "PRIVATE";
 
 	public FileSystemResource downloadFile(Long bookId, HttpServletResponse response) {
 		Book book = bookDAO.getBookById(bookId);
@@ -79,14 +81,16 @@ public class FileService {
 			files.add(uploadedFile);
 		}
 
-////		TODO create ne method for indexer
-//		try {
-//			FileIndexer.indexDocs(new File(FILE_DIRECTORY));
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-
 		return new UploadedFile.UploadedFiles(files);
+	}
+
+	public void deleteFile(Long id) {
+		File dir = new File(FILE_DIRECTORY);
+		FileFilter fileFilter = new WildcardFileFilter(id + ".*");
+		File[] files = dir.listFiles(fileFilter);
+		for (File file : files) {
+			file.delete();
+		}
 	}
 
 	@Transactional // TODO transactions not working

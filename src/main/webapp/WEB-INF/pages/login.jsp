@@ -7,5 +7,5 @@
 			<%--<label class="checkbox">--%>
 			<%--<input type="checkbox" value="remember-me"> Remember me--%>
 			<%--</label>--%>
-			<button type="submit" class="btn btn-lg btn-primary btn-block">Sign in</button>
+			<button type="submit" class="btn btn-lg btn-primary btn-block">Log in</button>
 		</form>

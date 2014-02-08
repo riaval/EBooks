@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ua.miratech.zhukov.dao.UserDAO">
 
-    <resultMap id="userMap" type="ua.miratech.zhukov.dto.User">
+    <resultMap id="userMap" type="ua.miratech.zhukov.dto.UserOut">
         <id column="USER_ID" property="id"/>
         <result column="USER_EMAIL" property="email"/>
         <result column="USER_PASSWORD" property="password"/>
@@ -26,5 +26,24 @@
           ROLES r1
             ON u1.ROLE_ID = r1.ROLE_ID
     </select>
+
+    <insert id="createNewUser" parameterType="ua.miratech.zhukov.dto.UserInsert" useGeneratedKeys="true" keyProperty="id" keyColumn="USER_ID" >
+        INSERT INTO USERS (
+              EMAIL
+            , PASSWORD
+            , FIRST_NAME
+            , LAST_NAME
+            , REGISTRATION_DATE
+            , ROLE_ID
+        ) VALUES (
+              #{email}
+            , #{password}
+            , #{firstName}
+            , #{lastName}
+            , #{registrationDate}
+            , (SELECT ROLE_ID FROM ROLES WHERE ROLE_NAME = #{role})
+        )
+
+    </insert>
 
 </mapper>

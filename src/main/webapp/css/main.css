@@ -32,8 +32,8 @@ code {
 }
 
 /* Login form */
-.form-signin {
-	max-width: 330px;
+.form-signin, .form-signup {
+	max-width: 400px;
 	padding: 15px;
 	margin: 0 auto;
 }
@@ -107,4 +107,17 @@ code {
 
 #fileupload {
 	margin-top: 25px;
+}
+
+.my-book-title {
+	overflow: hidden;
+}
+
+.shared-block {
+	float: right;
+	margin-right: 93px;
+}
+.title-content {
+	float: left;
+	width: 710px;
 }

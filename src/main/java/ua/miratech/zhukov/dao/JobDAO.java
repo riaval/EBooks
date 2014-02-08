@@ -12,7 +12,7 @@ public interface JobDAO {
 			@Param("userEmail") String userEmail
 	);
 
-	public Integer insertJob(Job job);
+	public void insertJob(Job job);
 
 	public void updateEndTime(
 			@Param("endTime")Date endTime,

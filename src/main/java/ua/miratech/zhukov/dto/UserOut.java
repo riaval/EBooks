@@ -2,21 +2,20 @@ package ua.miratech.zhukov.dto;
 
 import java.util.Date;
 
-public class User {
+public class UserOut {
 
-	private long id;
+	private Long id;
 	private String email;
-	private String password;
 	private String firstName;
 	private String lastName;
 	private Date registrationDate;
 	private Role role;
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -26,14 +25,6 @@ public class User {
 
 	public void setEmail(String email) {
 		this.email = email;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
 	}
 
 	public String getFirstName() {

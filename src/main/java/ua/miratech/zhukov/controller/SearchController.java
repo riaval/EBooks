@@ -5,6 +5,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import ua.miratech.zhukov.lucene.FileIndexer;
 
 @Controller
 @RequestMapping("/search")
@@ -20,6 +21,12 @@ public class SearchController {
 			ModelMap model
 			, @RequestParam(value = "content") String content
 	) {
+		try {
+			FileIndexer.own(content);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		return "search-tiles";
 	}
 

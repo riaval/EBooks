@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 import ua.miratech.zhukov.dao.BookDAO;
 import ua.miratech.zhukov.dto.Book;
+import ua.miratech.zhukov.dto.SharedType;
 import ua.miratech.zhukov.util.FictionBookParser;
 
 import java.io.File;
@@ -20,6 +21,9 @@ public class BookService {
 
 	@Autowired(required = false)
 	BookDAO bookDAO;
+
+	@Autowired
+	FileService fileService;
 
 	public void getBookContent(Long bookId, ModelMap model) {
 		Book book = bookDAO.getBookById(bookId);
@@ -49,6 +53,22 @@ public class BookService {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String userEmail = auth.getName();
 		return bookDAO.getMyBooks(userEmail, "DESC");
+	}
+
+	public List<Book> getLastBooks() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String userEmail = auth.getName();
+
+		return bookDAO.getLastBooks(1, 10, userEmail);
+	}
+
+	public void deleteBook(Long id) {
+		bookDAO.deleteBook(id);
+		fileService.deleteFile(id);
+	}
+
+	public void setSharedType(Long bookId, SharedType sharedType) {
+		bookDAO.setSharedType(bookId, sharedType.name());
 	}
 
 }
