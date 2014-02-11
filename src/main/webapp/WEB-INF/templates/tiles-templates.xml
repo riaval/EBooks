@@ -5,7 +5,7 @@
 
 <tiles-definitions>
 
-    <definition name="template-main" template="/WEB-INF/pages/_template.jsp">
+    <definition name="template-main" template="/WEB-INF/templates/template.jsp">
         <put-attribute name="content" value=""/>
         <put-attribute name="search" value=""/>
         <put-attribute name="upload" value=""/>

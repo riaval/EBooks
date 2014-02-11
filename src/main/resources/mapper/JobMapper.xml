@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="ua.miratech.zhukov.dao.JobDAO">
+<mapper namespace="ua.miratech.zhukov.mapper.JobMapper">
 
     <resultMap id="jobMap" type="ua.miratech.zhukov.dto.Job">
         <id column="JOB_ID" property="id" />

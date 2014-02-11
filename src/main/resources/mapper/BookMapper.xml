@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="ua.miratech.zhukov.dao.BookDAO">
+<mapper namespace="ua.miratech.zhukov.mapper.BookMapper">
 
     <resultMap id="bookMap" type="ua.miratech.zhukov.dto.Book">
         <id column="BOOK_ID" property="id" />
@@ -152,7 +152,7 @@
           BOOK_ID = #{id}
     </select>
 
-    <select id="addBook" parameterType="ua.miratech.zhukov.dto.Book" statementType="CALLABLE">
+    <select id="add" parameterType="ua.miratech.zhukov.dto.Book" statementType="CALLABLE">
         {#{id,javaType=Long,jdbcType=NUMERIC,mode=OUT} = call  INSERT_BOOK(
              #{author}
             ,#{title}
@@ -171,7 +171,7 @@
        }
     </select>
 
-    <delete id="deleteBook">
+    <delete id="delete">
         DELETE FROM BOOKS WHERE BOOK_ID = #{bookId}
     </delete>
 
@@ -187,5 +187,24 @@
         WHERE
           BOOK_ID = #{bookId}
     </update>
+
+    <insert id="share">
+        INSERT INTO SHARED (
+              ID_BOOK
+            , ID_OWNER
+            , ID_GRANTEE
+        ) VALUES (
+              #{bookId}
+            , (SELECT USER_ID FROM USERS WHERE EMAIL = #{owner})
+            , (SELECT USER_ID FROM USERS WHERE EMAIL = #{grantee})
+        )
+    </insert>
+
+    <delete id="unShareBook">
+      DELETE FROM SHARED WHERE
+        ID_BOOK = #{bookId} AND
+        ID_OWNER = (SELECT USER_ID FROM USERS WHERE EMAIL = #{ownerEmail}) AND
+        ID_GRANTEE = #{granteeID}
+    </delete>
 
 </mapper>

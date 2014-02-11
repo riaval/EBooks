@@ -9,7 +9,7 @@ public class UserOut {
 	private String firstName;
 	private String lastName;
 	private Date registrationDate;
-	private Role role;
+	private String role;
 
 	public Long getId() {
 		return id;
@@ -51,11 +51,11 @@ public class UserOut {
 		this.registrationDate = registrationDate;
 	}
 
-	public Role getRole() {
+	public String getRole() {
 		return role;
 	}
 
-	public void setRole(Role role) {
+	public void setRole(String role) {
 		this.role = role;
 	}
 }

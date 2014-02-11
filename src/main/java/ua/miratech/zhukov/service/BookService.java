@@ -6,9 +6,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
-import ua.miratech.zhukov.dao.BookDAO;
+import org.springframework.web.bind.annotation.PathVariable;
+import ua.miratech.zhukov.mapper.BookMapper;
+import ua.miratech.zhukov.mapper.UserMapper;
 import ua.miratech.zhukov.dto.Book;
 import ua.miratech.zhukov.dto.SharedType;
+import ua.miratech.zhukov.dto.UserOut;
 import ua.miratech.zhukov.util.FictionBookParser;
 
 import java.io.File;
@@ -20,13 +23,16 @@ import java.util.List;
 public class BookService {
 
 	@Autowired(required = false)
-	BookDAO bookDAO;
+	BookMapper bookMapper;
+
+	@Autowired(required = false)
+	UserMapper userMapper;
 
 	@Autowired
 	FileService fileService;
 
 	public void getBookContent(Long bookId, ModelMap model) {
-		Book book = bookDAO.getBookById(bookId);
+		Book book = bookMapper.getBookById(bookId);
 		File file = new File(book.getPath() + book.getId() + "." + book.getExtension());
 		FileInputStream fis = null;
 
@@ -52,23 +58,42 @@ public class BookService {
 	public List<Book> getMyBooks() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String userEmail = auth.getName();
-		return bookDAO.getMyBooks(userEmail, "DESC");
+		return bookMapper.getMyBooks(userEmail, "DESC");
 	}
 
 	public List<Book> getLastBooks() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String userEmail = auth.getName();
 
-		return bookDAO.getLastBooks(1, 10, userEmail);
+		return bookMapper.getLastBooks(1, 10, userEmail);
 	}
 
 	public void deleteBook(Long id) {
-		bookDAO.deleteBook(id);
+		bookMapper.delete(id);
 		fileService.deleteFile(id);
 	}
 
 	public void setSharedType(Long bookId, SharedType sharedType) {
-		bookDAO.setSharedType(bookId, sharedType.name());
+		bookMapper.setSharedType(bookId, sharedType.name());
+	}
+
+	public void shareBook(Long bookId, String grantee) {
+		UserOut user = userMapper.getUserByEmail(grantee);
+		if (user == null) {
+			throw new RuntimeException("User not found");
+		}
+
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String owner = auth.getName();
+
+		bookMapper.share(bookId, owner, grantee);
+	}
+
+	public void unShareBook(Long bookId, Long userId) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String userEmail = auth.getName();
+
+		bookMapper.unShareBook(bookId, userEmail, userId);
 	}
 
 }

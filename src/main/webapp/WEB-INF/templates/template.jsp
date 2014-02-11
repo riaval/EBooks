@@ -10,6 +10,9 @@
 	<link href="<c:url value="/css/main.css" />" rel="stylesheet">
 	<!-- jQuery -->
 	<script type="text/javascript" charset="UTF-8" src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+	<%-- jQuery Growl --%>
+	<script src="<c:url value="/plugins/jquery.growl/javascripts/jquery.growl.js" />" type="text/javascript"></script>
+	<link href="<c:url value="/plugins/jquery.growl/stylesheets/jquery.growl.css" />" rel="stylesheet" type="text/css" />
 	<!-- Bootstrap -->
 	<link href="<c:url value="/plugins/bootstrap/css/bootstrap.min.css" />" rel="stylesheet">
 	<script type="text/javascript" src="<c:url value="/plugins/bootstrap/js/bootstrap.min.js" />"></script>
@@ -38,7 +41,7 @@
 					<li class="<tiles:insertAttribute name="upload" />"><a href="${contextPath}/upload">Upload</a></li>
 					<li class="<tiles:insertAttribute name="myBooks" />"><a href="${contextPath}/mybooks">My books</a></li>
 					<li class="<tiles:insertAttribute name="jobs" />"><a href="${contextPath}/jobs">Jobs</a></li>
-					<li class="<tiles:insertAttribute name="shared" />"><a href="${contextPath}/shared">Shared</a></li>
+					<%--<li class="<tiles:insertAttribute name="shared" />"><a href="${contextPath}/shared">Shared</a></li>--%>
 					</sec:authorize>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">

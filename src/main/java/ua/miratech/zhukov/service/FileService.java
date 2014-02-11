@@ -2,7 +2,6 @@ package ua.miratech.zhukov.service;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
-import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.security.core.Authentication;
@@ -11,9 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
-import ua.miratech.zhukov.dao.BookDAO;
+import ua.miratech.zhukov.mapper.BookMapper;
 import ua.miratech.zhukov.dto.Book;
-import ua.miratech.zhukov.lucene.FileIndexer;
 import ua.miratech.zhukov.util.FictionBookParser;
 import ua.miratech.zhukov.util.UploadedFile;
 
@@ -30,7 +28,7 @@ import java.util.Map;
 public class FileService {
 
 	@Autowired(required = false)
-	private BookDAO bookDAO;
+	private BookMapper bookMapper;
 
 	@Autowired
 	private JobsService jobsService;
@@ -39,7 +37,7 @@ public class FileService {
 	private static final String DEFAULT_SHARED_TYPE = "PRIVATE";
 
 	public FileSystemResource downloadFile(Long bookId, HttpServletResponse response) {
-		Book book = bookDAO.getBookById(bookId);
+		Book book = bookMapper.getBookById(bookId);
 
 		String filePath = book.getPath() + book.getId() + "." + book.getExtension();
 		response.setHeader("content-Disposition", "attachment; filename=" + book.getFileName());
@@ -115,12 +113,12 @@ public class FileService {
 				DEFAULT_SHARED_TYPE,
 				fbp.getGenres()
 		);
-		bookDAO.addBook(book);
+		bookMapper.add(book);
 //		int i=0;
 		for (String each : fbp.getGenres()) {
 //			if (i == 1 )
 //				throw new RuntimeException();
-			bookDAO.addGenre(book.getId(), each);
+			bookMapper.addGenre(book.getId(), each);
 //			i++;
 		}
 

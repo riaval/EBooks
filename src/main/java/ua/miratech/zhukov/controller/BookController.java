@@ -9,8 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import ua.miratech.zhukov.dto.SharedType;
+import ua.miratech.zhukov.dto.UserOut;
 import ua.miratech.zhukov.service.BookService;
 import ua.miratech.zhukov.service.FileService;
+import ua.miratech.zhukov.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,7 +48,7 @@ public class BookController {
 		return "redirect:" + previousPage;
 	}
 
-	@RequestMapping(value = "/book/{bookId}", method = RequestMethod.GET, params = {"type"})
+	@RequestMapping(value = "/book/{bookId}", method = RequestMethod.POST, params = {"type"})
 	public ResponseEntity  setType(@PathVariable Long bookId, @RequestParam(value = "type") String type) {
 		SharedType sharedType = null;
 		switch (type) {
@@ -57,10 +59,31 @@ public class BookController {
 				sharedType = SharedType.PRIVATE;
 				break;
 		}
-		bookService.setSharedType(bookId, sharedType);
+		try {
+			bookService.setSharedType(bookId, sharedType);
+		} catch (Exception e) {
+			return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 
-//		String previousPage = request.getHeader("Referer");
-//		return "redirect:" + previousPage;
+		return new ResponseEntity(HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/book/share/{bookId}", method = RequestMethod.POST, params = {"email"})
+	public ResponseEntity  shareBook(@PathVariable Long bookId, @RequestParam(value = "email") String email) {
+		try {
+			bookService.shareBook(bookId, email);
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+			return new ResponseEntity(HttpStatus.BAD_REQUEST);
+		}
+
+		return new ResponseEntity(HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/books/{bookId}/users/{userId}/delete", method = RequestMethod.POST)
+	public ResponseEntity  unShareBook(@PathVariable Long bookId, @PathVariable Long userId) {
+		bookService.unShareBook(bookId, userId);
+
 		return new ResponseEntity(HttpStatus.OK);
 	}
 

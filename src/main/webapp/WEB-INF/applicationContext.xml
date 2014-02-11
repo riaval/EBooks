@@ -16,7 +16,7 @@
 
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
-        <property name="mapperLocations" value="classpath*:ua.miratech.zhukov.dao/*.xml" />
+        <property name="mapperLocations" value="classpath*:mapper/*.xml" />
     </bean>
 
     <!--<bean class="org.mybatis.spring.SqlSessionTemplate" id="sqlSessionTemplate">-->
@@ -25,7 +25,7 @@
 
     <!-- scan for mappers and let them be autowired -->
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="ua.miratech.zhukov.dao" />
+        <property name="basePackage" value="ua.miratech.zhukov.mapper" />
     </bean>
 
     <bean id="executorService" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool" destroy-method="shutdown">

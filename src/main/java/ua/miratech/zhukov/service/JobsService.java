@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import ua.miratech.zhukov.dao.JobDAO;
+import ua.miratech.zhukov.mapper.JobMapper;
 import ua.miratech.zhukov.dto.Job;
 import ua.miratech.zhukov.util.JobThread;
 
@@ -21,7 +21,7 @@ public class JobsService {
 	ExecutorService service;
 
 	@Autowired(required = false)
-	JobDAO jobDAO;
+	JobMapper jobMapper;
 
 	public void newIndexFileJob(String path) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -34,16 +34,16 @@ public class JobsService {
 				null
 		);
 
-		jobDAO.insertJob(job);
+		jobMapper.insertJob(job);
 
-		service.submit(new JobThread(path, job.getId(), jobDAO));
+		service.submit(new JobThread(path, job.getId(), jobMapper));
 	}
 
 	public List<Job> getJobs() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String email = auth.getName();
 
-		return jobDAO.getJob(email);
+		return jobMapper.getJob(email);
 	}
 
 }

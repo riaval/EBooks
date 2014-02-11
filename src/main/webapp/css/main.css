@@ -121,3 +121,8 @@ code {
 	float: left;
 	width: 710px;
 }
+
+.rm-user {
+	color: #ef2929;
+	cursor: pointer;
+}

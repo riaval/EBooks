@@ -1,4 +1,4 @@
-package ua.miratech.zhukov.dao;
+package ua.miratech.zhukov.mapper;
 
 import org.apache.ibatis.annotations.Param;
 import ua.miratech.zhukov.dto.Job;
@@ -6,7 +6,7 @@ import ua.miratech.zhukov.dto.Job;
 import java.util.Date;
 import java.util.List;
 
-public interface JobDAO {
+public interface JobMapper {
 
 	public List<Job> getJob(
 			@Param("userEmail") String userEmail

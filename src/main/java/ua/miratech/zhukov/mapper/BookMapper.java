@@ -1,12 +1,11 @@
-package ua.miratech.zhukov.dao;
+package ua.miratech.zhukov.mapper;
 
 import org.apache.ibatis.annotations.Param;
 import ua.miratech.zhukov.dto.Book;
 
-import java.util.Date;
 import java.util.List;
 
-public interface BookDAO {
+public interface BookMapper {
 
 	public List<Book> getLastBooks(
 			  @Param("pageNumber") int pageNumber
@@ -23,9 +22,9 @@ public interface BookDAO {
 			  @Param("id") Long id
 	);
 
-	public void addBook(Book book);
+	public void add(Book book);
 
-	public void deleteBook(Long bookId);
+	public void delete(Long bookId);
 
 	public void addGenre(
 			  @Param("userId") Long userId
@@ -34,5 +33,19 @@ public interface BookDAO {
 
 	public void setSharedType(
 			  @Param("bookId") Long bookId
-			, @Param("sharedType") String sharedType);
-	}
+			, @Param("sharedType") String sharedType
+	);
+
+	public void share(
+			  @Param("bookId") Long bookId
+			, @Param("owner") String owner
+			, @Param("grantee") String grantee
+	);
+
+	public void unShareBook(
+			  @Param("bookId") Long bookId
+			, @Param("ownerEmail") String ownerEmail
+			, @Param("granteeID") Long granteeID);
+
+}
+
