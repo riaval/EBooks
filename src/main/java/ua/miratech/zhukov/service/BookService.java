@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
+import ua.miratech.zhukov.lucene.FileIndexer;
 import ua.miratech.zhukov.mapper.BookMapper;
 import ua.miratech.zhukov.mapper.UserMapper;
 import ua.miratech.zhukov.dto.Book;
@@ -17,6 +18,7 @@ import ua.miratech.zhukov.util.FictionBookParser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -94,6 +96,21 @@ public class BookService {
 		String userEmail = auth.getName();
 
 		bookMapper.unShareBook(bookId, userEmail, userId);
+	}
+
+	public List<Book> doSimpleSearch(String content) {
+		try {
+			List<Long> ids = FileIndexer.own(content);
+			List<Book> books = new ArrayList<>();
+			for (Long each : ids) {
+				books.add(bookMapper.getBookById(each));
+			}
+			return books;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 }

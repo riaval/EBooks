@@ -1,5 +1,6 @@
 package ua.miratech.zhukov.lucene;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.*;
@@ -16,13 +17,15 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class FileIndexer {
 
 	private static final String INDEX_PATH = "D:/EBOOKS_STORAGE/INDEX_CATALOGUE";
 
-	public static void own(String queryString) throws IOException, ParseException {
+	public static List<Long> own(String queryString) throws IOException, ParseException {
 //		String queryString = "\"It was Mr. Bean's birthday, and he wanted to enjoy it! What could he do?\"";
 		String field = "contents";
 
@@ -36,8 +39,16 @@ public class FileIndexer {
 		TopDocs results = searcher.search(query, 10);
 		ScoreDoc[] hits = results.scoreDocs;
 //		hits[0].
-
-		System.out.println(results.totalHits);
+		List<Long> ids = new ArrayList<>();
+		for (int i = 0; i < hits.length; i++) {
+			Document doc = searcher.doc(hits[i].doc);
+			String path = doc.get("path");
+			System.out.println(FilenameUtils.removeExtension(new File(path).getName()));
+			Long id = Long.parseLong(FilenameUtils.removeExtension(new File(path).getName()));
+			ids.add(id);
+		}
+		return ids;
+//		System.out.println(results.totalHits);
 	}
 
 	public static void main() throws Exception {
