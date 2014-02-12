@@ -31,4 +31,6 @@
     <bean id="executorService" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool" destroy-method="shutdown">
     </bean>
 
+    <!--<bean id="authentication" class="org.springframework.security.core.Authentication" factory-method="" />-->
+
 </beans>

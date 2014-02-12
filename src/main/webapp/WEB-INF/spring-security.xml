@@ -8,6 +8,7 @@
 
     <http auto-config="true" use-expressions="true">
         <intercept-url pattern="/mybooks*" access="hasRole('ROLE_USER')" />
+        <intercept-url pattern="/upload*" access="hasRole('ROLE_USER')" />
         <form-login login-page="/login" default-target-url="/search"
                     authentication-failure-url="/login" />
         <logout logout-success-url="/" />

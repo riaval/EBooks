@@ -5,6 +5,7 @@ import ua.miratech.zhukov.lucene.FileIndexer;
 
 import java.util.Calendar;
 
+@Deprecated
 public class JobThread implements Runnable {
 
 	private String filePath;

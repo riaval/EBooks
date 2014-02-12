@@ -9,10 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import ua.miratech.zhukov.dto.SharedType;
-import ua.miratech.zhukov.dto.UserOut;
 import ua.miratech.zhukov.service.BookService;
 import ua.miratech.zhukov.service.FileService;
-import ua.miratech.zhukov.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,7 +35,7 @@ public class BookController {
 	})
 	@ResponseBody
 	public FileSystemResource downloadFile(@PathVariable Long bookId, HttpServletResponse response) {
-		return fileService.downloadFile(bookId, response);
+		return fileService.uploadFile(bookId, response);
 	}
 
 	@RequestMapping(value = "/book/delete/{bookId}", method = RequestMethod.GET)

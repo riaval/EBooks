@@ -1,4 +1,4 @@
-package ua.miratech.zhukov.controller.filter;
+package ua.miratech.zhukov.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

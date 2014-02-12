@@ -25,16 +25,31 @@ public class SearchController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET, params = {"content"})
-	public String mainSearch(
-			ModelMap model
+	public String simpleSearch(
+			  ModelMap model
 			, @RequestParam(value = "content") String content
 	) {
+		System.out.println("Simple search");
 
 		List<Book> books = bookService.doSimpleSearch(content);
 		for(Book book : books) {
 			System.out.println(book.getTitle());
 		}
 		model.addAttribute("books", books);
+		return "search-tiles";
+	}
+
+	@RequestMapping(method = RequestMethod.GET, params = {"content", "title", "author", "genre", "lang"})
+	public String extendedSearch(
+			  ModelMap model
+			, @RequestParam(value = "content") String content
+			, @RequestParam(value = "title") String title
+			, @RequestParam(value = "author") String author
+			, @RequestParam(value = "genre") String genre
+			, @RequestParam(value = "lang") String lang
+
+	) {
+		System.out.println("Extended search");
 		return "search-tiles";
 	}
 

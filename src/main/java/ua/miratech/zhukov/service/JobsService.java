@@ -13,6 +13,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
+@Deprecated
 @Component
 public class JobsService {
 
@@ -23,6 +24,7 @@ public class JobsService {
 	@Autowired(required = false)
 	JobMapper jobMapper;
 
+	@Deprecated
 	public void newIndexFileJob(String path) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String email = auth.getName();
@@ -39,6 +41,7 @@ public class JobsService {
 		service.submit(new JobThread(path, job.getId(), jobMapper));
 	}
 
+	@Deprecated
 	public List<Job> getJobs() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String email = auth.getName();

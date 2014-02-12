@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Deprecated
 public class FileIndexer {
 
 	private static final String INDEX_PATH = "D:/EBOOKS_STORAGE/INDEX_CATALOGUE";
@@ -211,7 +212,6 @@ public class FileIndexer {
 	}
 
 //	INDEX ------------------------------
-
 	public synchronized static void indexFile(String filePath) {
 		File file = new File(filePath);
 		Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_46);
@@ -240,7 +240,6 @@ public class FileIndexer {
 					}
 				}
 			} else {
-
 				FileInputStream fis;
 				try {
 					fis = new FileInputStream(file);
