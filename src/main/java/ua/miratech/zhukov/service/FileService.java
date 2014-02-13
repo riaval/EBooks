@@ -17,6 +17,7 @@ import ua.miratech.zhukov.mapper.BookIndexer;
 import ua.miratech.zhukov.mapper.BookMapper;
 import ua.miratech.zhukov.util.FictionBookParser;
 import ua.miratech.zhukov.util.IndexCallable;
+import ua.miratech.zhukov.util.UnCompressCallable;
 import ua.miratech.zhukov.util.UploadedFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -34,6 +35,9 @@ public class FileService {
 
 	@Autowired(required = false)
 	private BookMapper bookMapper;
+
+	@Autowired
+	SecurityService securityService;
 
 	@Autowired()
 	@Qualifier("executorService")
@@ -64,20 +68,24 @@ public class FileService {
 		for (String fileName : filesMap.keySet()) {
 			MultipartFile mpf = filesMap.get(fileName);
 
+			UploadedFile uploadedFile = new UploadedFile(
+					mpf.getBytes(),
+					mpf.getOriginalFilename(),
+					mpf.getSize(),
+					mpf.getContentType()
+			);
+
+			String userEmail = securityService.getUserEmail();
+
 			if ("application/zip".equals(mpf.getContentType())) {
-				List<UploadedFile> uploadedFiles = uploadZipFile(
-						mpf.getOriginalFilename(),
-						mpf.getSize(),
-						mpf.getBytes()
-				);
-				files.addAll(uploadedFiles);
-				continue;
+				service.submit(new UnCompressCallable(this, uploadedFile, userEmail));
+			} else {
+				uploadSimpleFile(uploadedFile, userEmail);
 			}
 
-			if (mpf.getSize() > MAX_FILE_SIZE) {
-				continue;
-			}
-			UploadedFile uploadedFile = uploadSimpleFile(mpf.getOriginalFilename(), mpf.getSize(), mpf.getBytes());
+//			if (mpf.getSize() > MAX_FILE_SIZE) {
+//				continue;
+//			}
 
 			files.add(uploadedFile);
 		}
@@ -85,49 +93,51 @@ public class FileService {
 		return files;
 	}
 
-	public UploadedFile uploadSimpleFile(String fileName, Long fileSize, byte[] fileContent) throws IOException {
+	public UploadedFile uploadSimpleFile(UploadedFile uf, String userEmail) throws IOException {
 		// Insert book to database
-		Book book = insertBook(fileName, fileSize, fileContent);
+		Book book = insertBook(uf.getName(), uf.getSize(), uf.getBytes(), userEmail);
 
 		// Save file to the Hard Drive
-		saveFile(fileContent, book);
+		saveFile(uf.getBytes(), book);
 
 		// Index file
-		indexFile(fileContent, book);
+		indexFile(uf.getBytes(), book);
 
-		UploadedFile uploadedFile = new UploadedFile(
-				fileContent,
-				fileName,
-				fileSize,
-				"text"
-		);
+		uf.setType("text");
 
-		return uploadedFile;
+		return uf;
 	}
 
-	public List<UploadedFile> uploadZipFile(String fileName, Long fileSize, byte[] fileContent) throws IOException {
-		List<UploadedFile> uploadedFile = new ArrayList<>();
+	public List<UploadedFile> uploadZipFile(UploadedFile uf, String userEmail) throws IOException {
+		List<UploadedFile> uploadedFiles = new ArrayList<>();
 
 		Long systemTime = Calendar.getInstance().getTime().getTime();
 		String zipDirPath = TEMP_DIRECTORY + systemTime;
-		String zipFilePath = zipDirPath + "." + FilenameUtils.getExtension(fileName);
+		String zipFilePath = zipDirPath + "." + FilenameUtils.getExtension(uf.getName());
 
 		File zipDir = new File(zipDirPath);
 		File zipFile = new File(zipFilePath);
 
-		FileCopyUtils.copy(fileContent, new FileOutputStream(zipFilePath));
+		FileCopyUtils.copy(uf.getBytes(), new FileOutputStream(zipFilePath));
 		extractZip(zipFilePath);
 
 		Collection files = FileUtils.listFiles(zipDir, new String[]{"fb2"}, true);
 		for (Object each : files) {
 			File file = (File) each;
 			Path filePath = Paths.get(file.getAbsolutePath());
-			uploadedFile.add(uploadSimpleFile(file.getName(), file.length(), Files.readAllBytes(filePath)));
+			UploadedFile uploadedFile = new UploadedFile(
+					Files.readAllBytes(filePath),
+					file.getName(),
+					file.length(),
+					null
+			);
+
+			uploadedFiles.add(uploadSimpleFile(uploadedFile, userEmail));
 		}
 
 		FileUtils.deleteDirectory(zipDir);
 		zipFile.delete();
-		return uploadedFile;
+		return uploadedFiles;
 	}
 
 	public void deleteFile(Long id) {
@@ -139,10 +149,11 @@ public class FileService {
 		}
 	}
 
-	private Book insertBook(String fileName, Long fileSize, byte[] fileContent) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String userEmail = auth.getName();
-
+	private Book insertBook(String fileName, Long fileSize, byte[] fileContent, String userEmail) {
+//		System.out.println(securityService);
+//
+////		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+////		String userEmail = auth.getName();
 		FictionBookParser fbp = new FictionBookParser(fileContent);
 		Book book = new Book(
 				fbp.getAuthor(),

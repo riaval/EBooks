@@ -6,6 +6,7 @@ import ua.miratech.zhukov.dto.Job;
 import java.util.Date;
 import java.util.List;
 
+@Deprecated
 public interface JobMapper {
 
 	public List<Job> getJob(
