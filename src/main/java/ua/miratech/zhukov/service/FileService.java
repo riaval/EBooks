@@ -1,5 +1,6 @@
 package ua.miratech.zhukov.service;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,23 +9,24 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
+import ua.miratech.zhukov.dto.Book;
 import ua.miratech.zhukov.dto.IndexBook;
 import ua.miratech.zhukov.mapper.BookIndexer;
 import ua.miratech.zhukov.mapper.BookMapper;
-import ua.miratech.zhukov.dto.Book;
 import ua.miratech.zhukov.util.FictionBookParser;
 import ua.miratech.zhukov.util.IndexCallable;
 import ua.miratech.zhukov.util.UploadedFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 @Service
@@ -55,7 +57,7 @@ public class FileService {
 		return new FileSystemResource(filePath);
 	}
 
-//	TODO Transaction not working
+	//	TODO Transaction not working
 	public List<UploadedFile> uploadFile(Map<String, MultipartFile> filesMap) throws IOException {
 		LinkedList<UploadedFile> files = new LinkedList<>();
 
@@ -63,37 +65,69 @@ public class FileService {
 			MultipartFile mpf = filesMap.get(fileName);
 
 			if ("application/zip".equals(mpf.getContentType())) {
-				unZipFile(mpf);
-				break;
-			}
-
-			if (files.size() >= 50) {
-				break;
+				List<UploadedFile> uploadedFiles = uploadZipFile(
+						mpf.getOriginalFilename(),
+						mpf.getSize(),
+						mpf.getBytes()
+				);
+				files.addAll(uploadedFiles);
+				continue;
 			}
 
 			if (mpf.getSize() > MAX_FILE_SIZE) {
 				continue;
 			}
+			UploadedFile uploadedFile = uploadSimpleFile(mpf.getOriginalFilename(), mpf.getSize(), mpf.getBytes());
 
-			// Insert book to database
-			Book book = insertBook(mpf);
-
-			// Save file to the Hard Drive
-			saveFile(mpf, book.getId());
-
-			// Index file
-			indexFile(mpf, book);
-
-			UploadedFile uploadedFile = new UploadedFile(
-					mpf.getBytes(),
-					mpf.getOriginalFilename(),
-					mpf.getSize(),
-					mpf.getContentType()
-			);
 			files.add(uploadedFile);
 		}
 
 		return files;
+	}
+
+	public UploadedFile uploadSimpleFile(String fileName, Long fileSize, byte[] fileContent) throws IOException {
+		// Insert book to database
+		Book book = insertBook(fileName, fileSize, fileContent);
+
+		// Save file to the Hard Drive
+		saveFile(fileContent, book);
+
+		// Index file
+		indexFile(fileContent, book);
+
+		UploadedFile uploadedFile = new UploadedFile(
+				fileContent,
+				fileName,
+				fileSize,
+				"text"
+		);
+
+		return uploadedFile;
+	}
+
+	public List<UploadedFile> uploadZipFile(String fileName, Long fileSize, byte[] fileContent) throws IOException {
+		List<UploadedFile> uploadedFile = new ArrayList<>();
+
+		Long systemTime = Calendar.getInstance().getTime().getTime();
+		String zipDirPath = TEMP_DIRECTORY + systemTime;
+		String zipFilePath = zipDirPath + "." + FilenameUtils.getExtension(fileName);
+
+		File zipDir = new File(zipDirPath);
+		File zipFile = new File(zipFilePath);
+
+		FileCopyUtils.copy(fileContent, new FileOutputStream(zipFilePath));
+		extractZip(zipFilePath);
+
+		Collection files = FileUtils.listFiles(zipDir, new String[]{"fb2"}, true);
+		for (Object each : files) {
+			File file = (File) each;
+			Path filePath = Paths.get(file.getAbsolutePath());
+			uploadedFile.add(uploadSimpleFile(file.getName(), file.length(), Files.readAllBytes(filePath)));
+		}
+
+		FileUtils.deleteDirectory(zipDir);
+		zipFile.delete();
+		return uploadedFile;
 	}
 
 	public void deleteFile(Long id) {
@@ -105,26 +139,22 @@ public class FileService {
 		}
 	}
 
-	private Book insertBook(MultipartFile mpf) throws IOException {
+	private Book insertBook(String fileName, Long fileSize, byte[] fileContent) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String userEmail = auth.getName();
 
-		String bookFileName = mpf.getOriginalFilename();
-		Long bookSize = mpf.getSize();
-		byte[] bookBytes = mpf.getBytes();
-
-		FictionBookParser fbp = new FictionBookParser(bookBytes);
+		FictionBookParser fbp = new FictionBookParser(fileContent);
 		Book book = new Book(
 				fbp.getAuthor(),
 				fbp.getTitle(),
 				Calendar.getInstance().getTime(),
-				bookFileName,
-				bookSize,
+				fileName,
+				fileSize,
 				FILE_DIRECTORY,
-				Integer.toString(Arrays.hashCode(bookBytes)),
+				Integer.toString(Arrays.hashCode(fileContent)),
 				userEmail,
 				fbp.getLanguage(),
-				FilenameUtils.getExtension(bookFileName),
+				FilenameUtils.getExtension(fileName),
 				fbp.getAnnotation(),
 				fbp.getISBN(),
 				DEFAULT_SHARED_TYPE,
@@ -138,12 +168,12 @@ public class FileService {
 		return book;
 	}
 
-	private void saveFile(MultipartFile mpf, Long bookId) throws IOException {
-		String filePath = FILE_DIRECTORY + bookId + "." + FilenameUtils.getExtension(mpf.getOriginalFilename());
-		FileCopyUtils.copy(mpf.getBytes(), new FileOutputStream(filePath));
+	private void saveFile(byte[] fileContent, Book book) throws IOException {
+		String filePath = FILE_DIRECTORY + book.getId() + "." + book.getExtension();
+		FileCopyUtils.copy(fileContent, new FileOutputStream(filePath));
 	}
 
-	private void indexFile(MultipartFile mpf, Book book) throws IOException {
+	private void indexFile(byte[] fileContent, Book book) throws IOException {
 		IndexBook indexBook = new IndexBook(
 				book.getAuthor(),
 				book.getTitle(),
@@ -154,22 +184,33 @@ public class FileService {
 				book.getAnnotation(),
 				book.getIsbn(),
 				book.getGenres(),
-				mpf.getBytes()
+				fileContent
 		);
 
 		service.submit(new IndexCallable(indexBook, bookIndexer));
 	}
 
-	private void unZipFile(MultipartFile mpf) throws IOException {
-		Long systemTime = Calendar.getInstance().getTime().getTime();
-		String filePath = TEMP_DIRECTORY + systemTime + "." + FilenameUtils.getExtension(mpf.getOriginalFilename());
-		FileCopyUtils.copy(mpf.getBytes(), new FileOutputStream(filePath));
-//		File file = new File(filePath);
-		extractFolder(filePath);
-	}
+//	private void unZipFile(MultipartFile mpf) throws IOException {
+//		Long systemTime = Calendar.getInstance().getTime().getTime();
+//		String zipDirPath = TEMP_DIRECTORY + systemTime;
+//		String zipFilePath = zipDirPath + "." + FilenameUtils.getExtension(mpf.getOriginalFilename());
+//
+//		File zipDir = new File(zipDirPath);
+//		File zipFile = new File(zipFilePath);
+//
+//		FileCopyUtils.copy(mpf.getBytes(), new FileOutputStream(zipFilePath));
+//		extractZip(zipFilePath);
+//
+//		Collection files = FileUtils.listFiles(zipDir, new String[]{"fb2"}, true);
+//		for (Object each : files) {
+//			File file = (File) each;
+//		}
+//
+//		FileUtils.deleteDirectory(zipDir);
+//		zipFile.delete();
+//	}
 
-	static public void extractFolder(String zipFile) throws ZipException, IOException
-	{
+	private void extractZip(String zipFile) throws IOException {
 		System.out.println(zipFile);
 		int BUFFER = 2048;
 		File file = new File(zipFile);
@@ -181,8 +222,7 @@ public class FileService {
 		Enumeration zipFileEntries = zip.entries();
 
 		// Process each entry
-		while (zipFileEntries.hasMoreElements())
-		{
+		while (zipFileEntries.hasMoreElements()) {
 			// grab a zip file entry
 			ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
 			String currentEntry = entry.getName();
@@ -193,8 +233,7 @@ public class FileService {
 			// create the parent directory structure if needed
 			destinationParent.mkdirs();
 
-			if (!entry.isDirectory())
-			{
+			if (!entry.isDirectory()) {
 				BufferedInputStream is = new BufferedInputStream(zip
 						.getInputStream(entry));
 				int currentByte;
@@ -215,12 +254,12 @@ public class FileService {
 				is.close();
 			}
 
-			if (currentEntry.endsWith(".zip"))
-			{
+			if (currentEntry.endsWith(".zip")) {
 				// found a zip file, try to open
-				extractFolder(destFile.getAbsolutePath());
+				extractZip(destFile.getAbsolutePath());
 			}
 		}
+		zip.close();
 	}
 
 }

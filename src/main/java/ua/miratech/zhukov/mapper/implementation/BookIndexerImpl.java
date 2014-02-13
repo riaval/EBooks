@@ -27,7 +27,7 @@ import java.util.List;
 @Component
 public class BookIndexerImpl implements BookIndexer {
 
-	private static final String INDEX_PATH = "D:/EBOOKS_STORAGE/INDEX_CATALOGUES";
+	private static final String INDEX_PATH = "D:/EBOOKS_STORAGE/INDEX_CATALOGUE";
 	private static final String CONTENT = "content";
 	private static final String AUTHOR = "author";
 	private static final String TITLE = "title";
