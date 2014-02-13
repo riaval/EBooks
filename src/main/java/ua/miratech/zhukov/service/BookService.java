@@ -1,18 +1,19 @@
 package ua.miratech.zhukov.service;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
+import ua.miratech.zhukov.dto.*;
 import ua.miratech.zhukov.lucene.FileIndexer;
+import ua.miratech.zhukov.mapper.BookIndexer;
 import ua.miratech.zhukov.mapper.BookMapper;
 import ua.miratech.zhukov.mapper.UserMapper;
-import ua.miratech.zhukov.dto.Book;
-import ua.miratech.zhukov.dto.SharedType;
-import ua.miratech.zhukov.dto.UserOut;
 import ua.miratech.zhukov.util.FictionBookParser;
 
 import java.io.File;
@@ -25,13 +26,17 @@ import java.util.List;
 public class BookService {
 
 	@Autowired(required = false)
-	BookMapper bookMapper;
+	private BookMapper bookMapper;
 
 	@Autowired(required = false)
-	UserMapper userMapper;
+	private UserMapper userMapper;
 
 	@Autowired
-	FileService fileService;
+	private FileService fileService;
+
+	@Autowired
+	@Qualifier("bookIndexerImpl")
+	private BookIndexer bookIndexer;
 
 	public void getBookContent(Long bookId, ModelMap model) {
 		Book book = bookMapper.getBookById(bookId);
@@ -60,6 +65,7 @@ public class BookService {
 	public List<Book> getMyBooks() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String userEmail = auth.getName();
+
 		return bookMapper.getMyBooks(userEmail, "DESC");
 	}
 
@@ -98,19 +104,22 @@ public class BookService {
 		bookMapper.unShareBook(bookId, userEmail, userId);
 	}
 
-	public List<Book> doSimpleSearch(String content) {
-		try {
-			List<Long> ids = FileIndexer.own(content);
-			List<Book> books = new ArrayList<>();
-			for (Long each : ids) {
-				books.add(bookMapper.getBookById(each));
-			}
-			return books;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public List<Book> doSimpleSearch(String content) throws IOException, ParseException {
+		List<Long> ids = bookIndexer.doSimpleSearch(content);
+		return getBooksFromIds(ids);
+	}
 
-		return null;
+	public List<Book> doExtendedSearch(SearchBook searchBook) throws IOException, ParseException {
+		List<Long> ids = bookIndexer.doExtendedSearch(searchBook);
+		return getBooksFromIds(ids);
+	}
+
+	private List<Book> getBooksFromIds(List<Long> ids) {
+		List<Book> books = new ArrayList<>();
+		for (Long each : ids) {
+			books.add(bookMapper.getBookById(each));
+		}
+		return books;
 	}
 
 }

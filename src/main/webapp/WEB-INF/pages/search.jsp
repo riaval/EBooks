@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+
 <script type="text/javascript">
 	$(document).ready(function() {
 		$("#searchSubmit").click(function(){
@@ -15,45 +18,47 @@
 
 <div class="bs-example bs-example-tabs">
 	<ul class="nav nav-tabs" id="searchTab">
-		<li class="active"><a data-toggle="tab" href="#search-simple">Simple</a></li>
-		<li class=""><a data-toggle="tab" href="#search-extended">Extended</a></li>
+		<li class="${param.searchType == 'extended' ? '' : 'active'}"><a data-toggle="tab" href="#search-simple">Simple</a></li>
+		<li class="${param.searchType == 'extended' ? 'active' : ''}"><a data-toggle="tab" href="#search-extended">Extended</a></li>
 		<li style="float: right"><button type="button" class="btn btn-primary" id="searchSubmit">Submit</button></li>
 	</ul>
 	<div class="tab-content" id="searchContent">
-		<div id="search-simple" class="tab-pane fade active in">
+		<div id="search-simple" class="tab-pane fade ${param.searchType == 'extended' ? '' : 'active in'}">
 			<form method="GET" action="${contextPath}/search">
 				<div class="form-group">
 					<label for="content-smpl">Book content</label>
-					<input name="content" type="text" class="form-control" id="content-smpl" placeholder="Enter part of book text">
+					<input name="content" type="text" class="form-control" id="content-smpl" placeholder="Enter part of book text" value="${param.searchType == 'simple' ? fn:escapeXml(param.content) : ''}">
 				</div>
+				<input name="searchType" type="hidden" value="simple">
 			</form>
 		</div>
-		<div id="search-extended" class="tab-pane fade">
+		<div id="search-extended" class="tab-pane fade ${param.searchType == 'extended' ? 'active in' : ''}">
 			<form method="GET" action="${contextPath}/search">
 				<div class="row">
 					<div class="col-md-7">
 						<label for="content-ext">Book content</label>
-						<input name="content" type="text" class="form-control" id="content-ext" placeholder="IT was a special pleasure to see things eaten">
+						<input name="content" type="text" class="form-control" id="content-ext" placeholder="IT was a special pleasure to see things eaten" value="${param.searchType == 'extended' ? fn:escapeXml(param.content) : ''}">
 					</div>
 					<div class="col-md-5">
 						<label for="title">Title</label>
-						<input name="title" type="text" class="form-control" id="title" placeholder="Fahrenheit 451">
+						<input name="title" type="text" class="form-control" id="title" placeholder="Fahrenheit 451" value="${fn:escapeXml(param.title)}">
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-4">
 						<label for="author">Author</label>
-						<input name="author" type="text" class="form-control" id="author" placeholder="Ray Bradbury">
+						<input name="author" type="text" class="form-control" id="author" placeholder="Ray Bradbury" value="${fn:escapeXml(param.author)}">
 					</div>
 					<div class="col-md-4">
 						<label for="genre">Genre</label>
-						<input name="genre" type="text" class="form-control" id="genre" placeholder="comedy science fiction">
+						<input name="genre" type="text" class="form-control" id="genre" placeholder="comedy science fiction" value="${fn:escapeXml(param.genre)}">
 					</div>
 					<div class="col-md-4">
-						<label for="language">Genre</label>
-						<input name="lang" type="text" class="form-control" id="language" placeholder="en ru ua">
+						<label for="language">Language</label>
+						<input name="language" type="text" class="form-control" id="language" placeholder="en ru ua" value="${fn:escapeXml(param.language)}">
 					</div>
 				</div>
+				<input name="searchType" type="hidden" value="extended">
 			</form>
 		</div>
 	</div>

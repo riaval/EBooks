@@ -61,6 +61,10 @@ public class FileService {
 		for (String fileName : filesMap.keySet()) {
 			MultipartFile mpf = filesMap.get(fileName);
 
+			if ("application/zip".equals(mpf.getContentType())) {
+				break;
+			}
+
 			if (files.size() >= 50) {
 				break;
 			}
@@ -152,6 +156,10 @@ public class FileService {
 		);
 
 		service.submit(new IndexCallable(indexBook, bookIndexer));
+	}
+
+	private void unZipFile() {
+
 	}
 
 //	@Deprecated
