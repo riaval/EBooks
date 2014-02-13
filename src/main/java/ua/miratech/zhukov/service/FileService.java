@@ -165,7 +165,7 @@ public class FileService {
 		String filePath = TEMP_DIRECTORY + systemTime + "." + FilenameUtils.getExtension(mpf.getOriginalFilename());
 		FileCopyUtils.copy(mpf.getBytes(), new FileOutputStream(filePath));
 //		File file = new File(filePath);
-//		extractFolder(filePath);
+		extractFolder(filePath);
 	}
 
 	static public void extractFolder(String zipFile) throws ZipException, IOException
