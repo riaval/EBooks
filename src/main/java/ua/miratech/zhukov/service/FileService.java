@@ -20,12 +20,12 @@ import ua.miratech.zhukov.util.IndexCallable;
 import ua.miratech.zhukov.util.UploadedFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 @Service
 public class FileService {
@@ -42,6 +42,7 @@ public class FileService {
 	private BookIndexer bookIndexer;
 
 	private static final String FILE_DIRECTORY = "D:/EBOOKS_STORAGE/MAIN_CATALOGUE/";
+	private static final String TEMP_DIRECTORY = "D:/EBOOKS_STORAGE/TEMP_FILES/";
 	private static final String DEFAULT_SHARED_TYPE = "PRIVATE";
 	private static final int MAX_FILE_SIZE = 0x1800000;
 
@@ -62,6 +63,7 @@ public class FileService {
 			MultipartFile mpf = filesMap.get(fileName);
 
 			if ("application/zip".equals(mpf.getContentType())) {
+				unZipFile(mpf);
 				break;
 			}
 
@@ -137,7 +139,7 @@ public class FileService {
 	}
 
 	private void saveFile(MultipartFile mpf, Long bookId) throws IOException {
-		String filePath = FILE_DIRECTORY + bookId + "." + FilenameUtils.getExtension(mpf.getName());
+		String filePath = FILE_DIRECTORY + bookId + "." + FilenameUtils.getExtension(mpf.getOriginalFilename());
 		FileCopyUtils.copy(mpf.getBytes(), new FileOutputStream(filePath));
 	}
 
@@ -158,38 +160,67 @@ public class FileService {
 		service.submit(new IndexCallable(indexBook, bookIndexer));
 	}
 
-	private void unZipFile() {
-
+	private void unZipFile(MultipartFile mpf) throws IOException {
+		Long systemTime = Calendar.getInstance().getTime().getTime();
+		String filePath = TEMP_DIRECTORY + systemTime + "." + FilenameUtils.getExtension(mpf.getOriginalFilename());
+		FileCopyUtils.copy(mpf.getBytes(), new FileOutputStream(filePath));
+//		File file = new File(filePath);
+//		extractFolder(filePath);
 	}
 
-//	@Deprecated
-//	@Transactional // TODO transactions not working
-//	private Long storeFile(UploadedFile uploadedFile) {
-//		FictionBookParser fbp = new FictionBookParser(uploadedFile.getBytes());
-//
-//		String userEmail = auth.getName();
-//		Book book = new Book(
-//				fbp.getAuthor(),
-//				fbp.getTitle(),
-//				Calendar.getInstance().getTime(),
-//				uploadedFile.getName(),
-//				uploadedFile.getSize(),
-//				FILE_DIRECTORY,
-//				Integer.toString(uploadedFile.hashCode()),
-//				userEmail,
-//				fbp.getLanguage(),
-//				FilenameUtils.getExtension(uploadedFile.getName()),
-//				fbp.getAnnotation(),
-//				fbp.getISBN(),
-//				DEFAULT_SHARED_TYPE,
-//				fbp.getGenres()
-//		);
-//		bookMapper.add(book);
-//		for (String each : fbp.getGenres()) {
-//			bookMapper.addGenre(book.getId(), each);
-//		}
-//
-//		return book.getId();
-//	}
+	static public void extractFolder(String zipFile) throws ZipException, IOException
+	{
+		System.out.println(zipFile);
+		int BUFFER = 2048;
+		File file = new File(zipFile);
+
+		ZipFile zip = new ZipFile(file);
+		String newPath = zipFile.substring(0, zipFile.length() - 4);
+
+		new File(newPath).mkdir();
+		Enumeration zipFileEntries = zip.entries();
+
+		// Process each entry
+		while (zipFileEntries.hasMoreElements())
+		{
+			// grab a zip file entry
+			ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
+			String currentEntry = entry.getName();
+			File destFile = new File(newPath, currentEntry);
+			//destFile = new File(newPath, destFile.getName());
+			File destinationParent = destFile.getParentFile();
+
+			// create the parent directory structure if needed
+			destinationParent.mkdirs();
+
+			if (!entry.isDirectory())
+			{
+				BufferedInputStream is = new BufferedInputStream(zip
+						.getInputStream(entry));
+				int currentByte;
+				// establish buffer for writing file
+				byte data[] = new byte[BUFFER];
+
+				// write the current file to disk
+				FileOutputStream fos = new FileOutputStream(destFile);
+				BufferedOutputStream dest = new BufferedOutputStream(fos,
+						BUFFER);
+
+				// read and write until last byte is encountered
+				while ((currentByte = is.read(data, 0, BUFFER)) != -1) {
+					dest.write(data, 0, currentByte);
+				}
+				dest.flush();
+				dest.close();
+				is.close();
+			}
+
+			if (currentEntry.endsWith(".zip"))
+			{
+				// found a zip file, try to open
+				extractFolder(destFile.getAbsolutePath());
+			}
+		}
+	}
 
 }
