@@ -3,14 +3,11 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
 
-    <import resource="spring-datasource.xml" />
+    <jee:jndi-lookup id="dataSource" jndi-name="java:/OracleDSJNDI" expected-type="javax.sql.DataSource" />
 
-    <!-- scan for mappers and let them be autowired -->
-    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="ua.miratech.zhukov.mapper" />
-    </bean>
-
-    <bean id="executorService" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool" destroy-method="shutdown">
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="mapperLocations" value="classpath*:mapper/*.xml" />
     </bean>
 
 </beans>

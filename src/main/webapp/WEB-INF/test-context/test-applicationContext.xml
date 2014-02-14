@@ -1,0 +1,90 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!-- Configure Apache Tiles for the view -->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.tiles2.TilesViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.tiles2.TilesView"/>
+    </bean>
+    <bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
+        <property name="definitions" value="/WEB-INF/templates/tiles-templates.xml" />
+        <property name="preparerFactoryClass" value="org.springframework.web.servlet.view.tiles2.SpringBeanPreparerFactory"/>
+    </bean>
+
+    <!--<context:component-scan base-package="ua.miratech.zhukov"/>-->
+
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/pages/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <mvc:resources mapping="/plugins/**" location="/plugins/"/>
+    <mvc:resources mapping="/css/**" location="/css/"/>
+    <mvc:resources mapping="/img/**" location="/img/"/>
+
+    <mvc:annotation-driven/>
+
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+
+    <!-- Internationalization -->
+    <bean id="messageSource"
+          class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basename" value="classpath:lang" />
+        <property name="defaultEncoding" value="UTF-8"/>
+    </bean>
+
+    <bean id="localeChangeInterceptor"
+          class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+        <property name="paramName" value="lang" />
+    </bean>
+
+    <bean id="localeResolver"
+          class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+        <property name="defaultLocale" value="en"/>
+    </bean>
+
+    <bean id="handlerMapping"
+          class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="interceptors">
+            <ref bean="localeChangeInterceptor" />
+        </property>
+    </bean>
+
+    <mvc:interceptors>
+        <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+            <property name="paramName" value="lang" />
+        </bean>
+    </mvc:interceptors>
+
+</beans>
+
+<!--<beans xmlns="http://www.springframework.org/schema/beans"-->
+       <!--xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"-->
+       <!--xsi:schemaLocation="http://www.springframework.org/schema/beans-->
+       <!--http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">-->
+
+    <!--&lt;!&ndash;<bean id="dataSource"  class="org.springframework.jdbc.datasource.DriverManagerDataSource">&ndash;&gt;-->
+        <!--&lt;!&ndash;<property name="driverClassName" value="oracle.jdbc.OracleDriver" />&ndash;&gt;-->
+        <!--&lt;!&ndash;<property name="url" value="jdbc:oracle:thin:@192.168.56.101:1521:xe" />&ndash;&gt;-->
+        <!--&lt;!&ndash;<property name="username" value="Ebooks" />&ndash;&gt;-->
+        <!--&lt;!&ndash;<property name="password" value="kjcm35" />&ndash;&gt;-->
+    <!--&lt;!&ndash;</bean>&ndash;&gt;-->
+
+    <!--&lt;!&ndash;<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">&ndash;&gt;-->
+        <!--&lt;!&ndash;<property name="dataSource" ref="dataSource" />&ndash;&gt;-->
+        <!--&lt;!&ndash;<property name="mapperLocations" value="classpath*:mapper/*.xml" />&ndash;&gt;-->
+    <!--&lt;!&ndash;</bean>&ndash;&gt;-->
+
+    <!--&lt;!&ndash; scan for mappers and let them be autowired &ndash;&gt;-->
+    <!--<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">-->
+        <!--<property name="basePackage" value="ua.miratech.zhukov.mapper" />-->
+    <!--</bean>-->
+
+    <!--<bean id="executorService" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool" destroy-method="shutdown">-->
+    <!--</bean>-->
+
+<!--</beans>-->
