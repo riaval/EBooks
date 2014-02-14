@@ -1,8 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 		<div class="page-header">
-			<h1>Upload new books</h1>
+			<h1><spring:message code="uploadTitle"/></h1>
 		</div>
 
 		<form enctype="multipart/form-data" method="POST" action="rest/controller/upload" id="fileupload">
@@ -10,31 +11,31 @@
 			<noscript>&lt;input type="hidden" name="redirect" value="http://blueimp.github.io/jQuery-File-Upload/"&gt;</noscript>
 			<!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
 			<div class="row fileupload-buttonbar">
-				<div class="col-lg-7">
+				<div class="col-lg-8">
 					<!-- The fileinput-button span is used to style the file input field as button -->
                 <span class="btn btn-success fileinput-button">
                     <i class="glyphicon glyphicon-plus"></i>
-                    <span>Add files...</span>
+                    <span><spring:message code="addFiles"/></span>
                     <input type="file" multiple="" name="files[]">
                 </span>
 					<button class="btn btn-primary start" type="submit">
 						<i class="glyphicon glyphicon-upload"></i>
-						<span>Start upload</span>
+						<span><spring:message code="startUpload"/></span>
 					</button>
 					<button class="btn btn-warning cancel" type="reset">
 						<i class="glyphicon glyphicon-ban-circle"></i>
-						<span>Cancel upload</span>
+						<span><spring:message code="cancelUpload"/></span>
 					</button>
 					<button type="button" class="btn btn-danger delete">
 						<i class="glyphicon glyphicon-trash"></i>
-						<span>Delete</span>
+						<span><spring:message code="delete"/></span>
 					</button>
 					<input type="checkbox" class="toggle">
 					<!-- The global file processing state -->
 					<span class="fileupload-process"></span>
 				</div>
 				<!-- The global progress state -->
-				<div class="col-lg-5 fileupload-progress fade">
+				<div class="col-lg-4 fileupload-progress fade">
 					<!-- The global progress bar -->
 					<div aria-valuemax="100" aria-valuemin="0" role="progressbar" class="progress progress-striped active">
 						<div style="width:0%;" class="progress-bar progress-bar-success"></div>

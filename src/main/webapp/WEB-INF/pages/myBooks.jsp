@@ -2,9 +2,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+<sec:authentication var="user" property="principal" />
 		<div class="page-header">
-			<h1>My books</h1>
+			<h1><spring:message code="mybooksTitle"/></h1>
 		</div>
 <script>
 	function sharedType(iBookId, sType) {
@@ -81,20 +83,25 @@
 		<div class="row">
 			<!-- title row -->
 			<h2 class="book-title my-book-title">
-				<div class="title-content">
+				<div class="title-content col-md-9">
 					<img height="18px" width="35px" src="<c:url value="/img/book.png" />">
 					<a href="${contextPath}/book/${book.id}">${book.title}</a>
 				</div>
-				<div class="btn-group shared-block" data-toggle="buttons">
-					<%--<form action="${contextPath}/book/type/${book.id}" method="GET">--%>
+				<div class="col-md-3">
+					<%--${user.username}--%>
+					<%--${book.owner}--%>
+					<%--<c:if test="${user eq book.owner}">--%>
+					<div class="btn-group" data-toggle="buttons">
 						<label class="btn btn-primary ${book.sharedType == 'PRIVATE' ? 'active' : ''}" onclick="sharedType(${book.id}, 'private')">
-							<input type="radio"> Private
+							<input type="radio"> <spring:message code="private"/>
 						</label>
 						<label class="btn btn-primary ${book.sharedType == 'PUBLIC' ? 'active' : ''}" onclick="sharedType(${book.id}, 'public')">
-							<input type="radio"> Public
+							<input type="radio"> <spring:message code="public"/>
 						</label>
-					<%--</form>--%>
+					</div>
+					<%--</c:if>--%>
 				</div>
+
 			</h2> <!-- show title as link to book -->
 			<div class="contentholder col-md-9">
 				<p>${book.annotation}</p>
@@ -110,10 +117,10 @@
 				</p>
 
 				<div>
-					<strong>Language: </strong><a href="#">${book.language}</a>
+					<strong><spring:message code="language"/>: </strong><a href="#">${book.language}</a>
 				</div>
 				<div>
-					<strong>Genres: </strong>
+					<strong><spring:message code="genres"/>: </strong>
 					<c:forEach var="genre" items="${book.genres}">
 						<a href="#">${genre}</a>
 					</c:forEach>
@@ -123,7 +130,7 @@
 				</p>
 
 				<div>
-					<strong>Download: </strong><a href="${contextPath}/file/${book.id}">
+					<strong><spring:message code="download"/>: </strong><a href="${contextPath}/file/${book.id}">
 					${book.extension} (<fmt:formatNumber type="number" maxFractionDigits="0" value="${book.size / 1024}" />Kb)
 				</a>
 				</div>
@@ -131,8 +138,8 @@
 				<p>
 					<div class="btn-group">
 						<%--<a href="#" type="button" class="btn btn-success btn-xs">Share</a>--%>
-						<button class="btn btn-success btn-xs" onclick="share(${book.id})">Share</button>
-						<a href="${contextPath}/book/delete/${book.id}" type="button" class="btn btn-danger btn-xs">Delete</a>
+						<button class="btn btn-success btn-xs" onclick="share(${book.id})"><spring:message code="share"/></button>
+						<a href="${contextPath}/book/delete/${book.id}" type="button" class="btn btn-danger btn-xs"><spring:message code="delete"/></a>
 					</div>
 				</p>
 
@@ -148,12 +155,12 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="modal-title" id="myModalLabel">Share book</h4>
+						<h4 class="modal-title" id="myModalLabel"><spring:message code="shareTitle"/></h4>
 					</div>
 					<div class="modal-body">
 						<div class="form-group">
-							<label for="shareEmail">Add user</label>
-							<input name="shareEmail" type="email" required="true" placeholder="Enter user email" class="form-control" id="shareEmail">
+							<label for="shareEmail"><spring:message code="addUser"/></label>
+							<input name="shareEmail" type="email" required="true" placeholder="<spring:message code="addUserPlaceholder"/>" class="form-control" id="shareEmail">
 						</div>
 						<div id="sharedUsers">
 							<table class="table table-hover" id="sharedUsersTable">
@@ -163,8 +170,8 @@
 						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						<button type="button" class="btn btn-primary" id="share">Share</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code="closeBt"/></button>
+						<button type="button" class="btn btn-primary" id="share"><spring:message code="shareBt"/></button>
 					</div>
 				</div>
 			</div>

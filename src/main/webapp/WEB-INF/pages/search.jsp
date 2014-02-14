@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
@@ -13,21 +14,21 @@
 </script>
 
 <div class="page-header">
-	<h1>Find books</h1>
+	<h1><spring:message code="searchTitle"/></h1>
 </div>
 
 <div class="bs-example bs-example-tabs">
 	<ul class="nav nav-tabs" id="searchTab">
-		<li class="${param.searchType == 'extended' ? '' : 'active'}"><a data-toggle="tab" href="#search-simple">Simple</a></li>
-		<li class="${param.searchType == 'extended' ? 'active' : ''}"><a data-toggle="tab" href="#search-extended">Extended</a></li>
-		<li style="float: right"><button type="button" class="btn btn-primary" id="searchSubmit">Submit</button></li>
+		<li class="${param.searchType == 'extended' ? '' : 'active'}"><a data-toggle="tab" href="#search-simple"><spring:message code="simple"/></a></li>
+		<li class="${param.searchType == 'extended' ? 'active' : ''}"><a data-toggle="tab" href="#search-extended"><spring:message code="extended"/></a></li>
+		<li style="float: right"><button type="button" class="btn btn-primary" id="searchSubmit"><spring:message code="searchBt"/></button></li>
 	</ul>
 	<div class="tab-content" id="searchContent">
 		<div id="search-simple" class="tab-pane fade ${param.searchType == 'extended' ? '' : 'active in'}">
 			<form method="GET" action="${contextPath}/search">
 				<div class="form-group">
-					<label for="content-smpl">Book content</label>
-					<input name="content" type="text" class="form-control" id="content-smpl" placeholder="Enter part of book text" value="${param.searchType == 'simple' ? fn:escapeXml(param.content) : ''}">
+					<label for="content-smpl"><spring:message code="bookContent"/></label>
+					<input name="content" type="text" class="form-control" id="content-smpl" placeholder="<spring:message code="bookContentPlaceholder"/>" value="${param.searchType == 'simple' ? fn:escapeXml(param.content) : ''}">
 				</div>
 				<input name="searchType" type="hidden" value="simple">
 			</form>
@@ -36,26 +37,26 @@
 			<form method="GET" action="${contextPath}/search">
 				<div class="row">
 					<div class="col-md-7">
-						<label for="content-ext">Book content</label>
-						<input name="content" type="text" class="form-control" id="content-ext" placeholder="IT was a special pleasure to see things eaten" value="${param.searchType == 'extended' ? fn:escapeXml(param.content) : ''}">
+						<label for="content-ext"><spring:message code="bookContent"/></label>
+						<input name="content" type="text" class="form-control" id="content-ext" placeholder="<spring:message code="bookContentPlaceholder"/>" value="${param.searchType == 'extended' ? fn:escapeXml(param.content) : ''}">
 					</div>
 					<div class="col-md-5">
-						<label for="title">Title</label>
-						<input name="title" type="text" class="form-control" id="title" placeholder="Fahrenheit 451" value="${fn:escapeXml(param.title)}">
+						<label for="title"><spring:message code="title"/></label>
+						<input name="title" type="text" class="form-control" id="title" placeholder="<spring:message code="titlePlaceholder"/>" value="${fn:escapeXml(param.title)}">
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-4">
-						<label for="author">Author</label>
-						<input name="author" type="text" class="form-control" id="author" placeholder="Ray Bradbury" value="${fn:escapeXml(param.author)}">
+						<label for="author"><spring:message code="author"/></label>
+						<input name="author" type="text" class="form-control" id="author" placeholder="<spring:message code="authorPlaceholder"/>" value="${fn:escapeXml(param.author)}">
 					</div>
 					<div class="col-md-4">
-						<label for="genre">Genre</label>
-						<input name="genre" type="text" class="form-control" id="genre" placeholder="comedy science fiction" value="${fn:escapeXml(param.genre)}">
+						<label for="genre"><spring:message code="genre"/></label>
+						<input name="genre" type="text" class="form-control" id="genre" placeholder="<spring:message code="genrePlaceholder"/>" value="${fn:escapeXml(param.genre)}">
 					</div>
 					<div class="col-md-4">
-						<label for="language">Language</label>
-						<input name="language" type="text" class="form-control" id="language" placeholder="en ru ua" value="${fn:escapeXml(param.language)}">
+						<label for="language"><spring:message code="language"/></label>
+						<input name="language" type="text" class="form-control" id="language" placeholder="<spring:message code="languagePlaceholder"/>" value="${fn:escapeXml(param.language)}">
 					</div>
 				</div>
 				<input name="searchType" type="hidden" value="extended">
