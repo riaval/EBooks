@@ -11,7 +11,6 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 import ua.miratech.zhukov.dto.Book;
 import ua.miratech.zhukov.dto.IndexBook;
-import ua.miratech.zhukov.mapper.BookIndexer;
 import ua.miratech.zhukov.mapper.BookMapper;
 import ua.miratech.zhukov.util.FictionBookParser;
 import ua.miratech.zhukov.util.IndexCallable;
@@ -43,8 +42,8 @@ public class FileService {
 	private ExecutorService service;
 
 	@Autowired
-	@Qualifier("bookIndexerService")
-	private BookIndexer bookIndexer;
+	@Qualifier("bookIndexerServiceServiceImpl")
+	private BookIndexerService bookIndexerService;
 
 	@Autowired
 	private EbookStorage ebookStorage;
@@ -196,7 +195,7 @@ public class FileService {
 				book.getTitle(),
 				book.getPublicationDate(),
 				book.getSize(),
-				ebookStorage.getMainCatalogue() + book.getStoredIndex() + "." + book.getExtension(),
+				book.getStoredIndex() + "." + book.getExtension(),
 				book.getLanguage(),
 				book.getAnnotation(),
 				book.getIsbn(),
@@ -204,7 +203,7 @@ public class FileService {
 				fileContent
 		);
 
-		service.submit(new IndexCallable(indexBook, bookIndexer));
+		service.submit(new IndexCallable(indexBook, bookIndexerService));
 	}
 
 	private void extractZip(String zipFile) throws IOException {

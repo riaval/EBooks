@@ -9,20 +9,20 @@ public class IndexBook {
 	private String title;
 	private Date publicationDate;
 	private Long size;
-	private String filePath;
+	private String fileName;
 	private String language;
 	private String annotation;
 	private String isbn;
 	private List<String> genres;
 	private byte[] content;
 
-	public IndexBook(String author, String title, Date publicationDate, Long size, String filePath, String language,
+	public IndexBook(String author, String title, Date publicationDate, Long size, String fileName, String language,
 					 String annotation, String isbn, List<String> genres, byte[] content) {
 		this.author = author;
 		this.title = title;
 		this.publicationDate = publicationDate;
 		this.size = size;
-		this.filePath = filePath;
+		this.fileName = fileName;
 		this.language = language;
 		this.annotation = annotation;
 		this.isbn = isbn;
@@ -62,12 +62,12 @@ public class IndexBook {
 		this.size = size;
 	}
 
-	public String getFilePath() {
-		return filePath;
+	public String getFileName() {
+		return fileName;
 	}
 
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 
 	public String getLanguage() {

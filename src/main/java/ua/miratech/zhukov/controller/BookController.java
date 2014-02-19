@@ -44,7 +44,7 @@ public class BookController {
 	}
 
 	@RequestMapping(value = "/book/delete/{bookId}", method = RequestMethod.GET)
-	public String deleteBook(@PathVariable Long bookId, HttpServletRequest request) {
+	public String deleteBook(@PathVariable Long bookId, HttpServletRequest request) throws IOException {
 		bookService.deleteBook(bookId);
 
 		String previousPage = request.getHeader("Referer");

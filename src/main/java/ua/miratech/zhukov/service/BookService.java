@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.NodeList;
 import ua.miratech.zhukov.dto.*;
 import ua.miratech.zhukov.dto.mapper.ShareInParam;
-import ua.miratech.zhukov.mapper.BookIndexer;
 import ua.miratech.zhukov.mapper.BookMapper;
 import ua.miratech.zhukov.util.FictionBookParser;
 import ua.miratech.zhukov.util.component.EbookStorage;
@@ -32,8 +31,8 @@ public class BookService {
 	private SecurityService securityService;
 
 	@Autowired
-	@Qualifier("bookIndexerService")
-	private BookIndexer bookIndexer;
+	@Qualifier("bookIndexerServiceServiceImpl")
+	private BookIndexerService bookIndexerService;
 
 	@Autowired
 	EbookStorage ebookStorage;
@@ -86,7 +85,7 @@ public class BookService {
 		return bookMapper.getLastBooks(currentPage, lastBooksAmount, userEmail);
 	}
 
-	public void deleteBook(Long bookId) {
+	public void deleteBook(Long bookId) throws IOException {
 		String userEmail = securityService.getUserEmail();
 
 		Book book = bookMapper.getBookById(bookId);
@@ -109,7 +108,7 @@ public class BookService {
 		System.out.println(count);
 		if (count == 0) {
 			fileService.deleteFile(book.getStoredIndex());
-			// TODO delete index
+			bookIndexerService.deleteIndex(book.getStoredIndex() + "." + book.getExtension());
 		}
 
 	}
@@ -157,12 +156,12 @@ public class BookService {
 	}
 
 	public List<Book> doSimpleSearch(String content) throws IOException, ParseException {
-		List<Long> storedIndexes = bookIndexer.doSimpleSearch(content);
+		List<Long> storedIndexes = bookIndexerService.doSimpleSearch(content);
 		return getBooksFromStoredIndexes(storedIndexes);
 	}
 
 	public List<Book> doExtendedSearch(SearchBook searchBook) throws IOException, ParseException {
-		List<Long> storedIndexes = bookIndexer.doExtendedSearch(searchBook);
+		List<Long> storedIndexes = bookIndexerService.doExtendedSearch(searchBook);
 		return getBooksFromStoredIndexes(storedIndexes);
 	}
 

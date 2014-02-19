@@ -132,7 +132,6 @@
 
 <!-- bootstrap just to have good looking page -->
 <link href="<c:url value="/plugins/bootstrap/css/bootstrap.min.css" />" rel="stylesheet">
-<script type="text/javascript" src="<c:url value="/plugins/bootstrap/js/bootstrap.min.js" />"></script>
 <script>
 	!function (a) {
 		"use strict";
@@ -158,4 +157,4 @@
 <script src="<c:url value="/plugins/file-upload/js/jquery.fileupload-process.js" />"></script>
 <script src="<c:url value="/plugins/file-upload/js/jquery.fileupload-validate.js" />"></script>
 <script src="<c:url value="/plugins/file-upload/js/jquery.fileupload-ui.js" />"></script>
-<script src="<c:url value="/plugins/main.js" />"></script>
+<script src="<c:url value="/js/upload.js" />"></script>

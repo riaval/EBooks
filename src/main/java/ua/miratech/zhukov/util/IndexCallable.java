@@ -1,7 +1,7 @@
 package ua.miratech.zhukov.util;
 
 import ua.miratech.zhukov.dto.IndexBook;
-import ua.miratech.zhukov.mapper.BookIndexer;
+import ua.miratech.zhukov.service.BookIndexerService;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
@@ -9,18 +9,17 @@ import java.util.concurrent.Callable;
 public class IndexCallable implements Callable<Boolean> {
 
 	private IndexBook book;
-	private BookIndexer bookIndexer;
+	private BookIndexerService bookIndexerService;
 
-	public IndexCallable(IndexBook book, BookIndexer bookIndexer) {
+	public IndexCallable(IndexBook book, BookIndexerService bookIndexerService) {
 		this.book = book;
-		this.bookIndexer = bookIndexer;
+		this.bookIndexerService = bookIndexerService;
 	}
 
 	@Override
 	public Boolean call() throws IOException {
-//		System.out.println("index starting");
-		bookIndexer.doIndex(book);
-//		System.out.println("index finish");
+		// TODO logging
+		bookIndexerService.doIndex(book);
 		return true;
 	}
 }
