@@ -11,7 +11,7 @@ public class Book {
 	private Date publicationDate;
 	private String fileName;
 	private Long size;
-	private String path;
+//	private String path;
 	private String sha1;
 	private String owner;
 	private String language;
@@ -20,10 +20,11 @@ public class Book {
 	private String isbn;
 	private String sharedType;
 	private List<String> genres;
+	private Long storedIndex;
 
 	public Book() {}
 
-	public Book(String author, String title, Date publicationDate, String fileName, Long size, String path,
+	public Book(String author, String title, Date publicationDate, String fileName, Long size,
 				String sha1, String owner, String language, String extension, String annotation, String isbn,
 				String sharedType, List<String> genres) {
 		this.author = author;
@@ -31,7 +32,7 @@ public class Book {
 		this.publicationDate = publicationDate;
 		this.fileName = fileName;
 		this.size = size;
-		this.path = path;
+//		this.path = path;
 		this.sha1 = sha1;
 		this.owner = owner;
 		this.language = language;
@@ -90,13 +91,13 @@ public class Book {
 		this.size = size;
 	}
 
-	public String getPath() {
-		return path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
-	}
+//	public String getPath() {
+//		return path;
+//	}
+//
+//	public void setPath(String path) {
+//		this.path = path;
+//	}
 
 	public String getSha1() {
 		return sha1;
@@ -160,5 +161,13 @@ public class Book {
 
 	public void setGenres(List<String> genres) {
 		this.genres = genres;
+	}
+
+	public Long getStoredIndex() {
+		return storedIndex;
+	}
+
+	public void setStoredIndex(Long storedIndex) {
+		this.storedIndex = storedIndex;
 	}
 }

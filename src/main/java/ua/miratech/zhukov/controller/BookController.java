@@ -8,12 +8,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import ua.miratech.zhukov.dto.ReadingBook;
 import ua.miratech.zhukov.dto.SharedType;
 import ua.miratech.zhukov.service.BookService;
 import ua.miratech.zhukov.service.FileService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Controller
 public class BookController {
@@ -25,8 +27,10 @@ public class BookController {
 	BookService bookService;
 
 	@RequestMapping(value = "/book/{bookId}", method = RequestMethod.GET)
-	public String printReadBookPage(@PathVariable Long bookId, ModelMap model) {
-		bookService.getBookContent(bookId, model);
+	public String printReadBookPage(@PathVariable Long bookId, ModelMap model) throws Exception {
+		ReadingBook readingBook = bookService.getReadingBookById(bookId);
+
+		model.addAttribute("readingBook", readingBook);
 		return "read-page-tiles";
 	}
 
@@ -35,6 +39,7 @@ public class BookController {
 	})
 	@ResponseBody
 	public FileSystemResource downloadFile(@PathVariable Long bookId, HttpServletResponse response) {
+		System.out.println(bookId);
 		return fileService.uploadFile(bookId, response);
 	}
 
@@ -47,39 +52,29 @@ public class BookController {
 	}
 
 	@RequestMapping(value = "/book/{bookId}", method = RequestMethod.POST, params = {"type"})
-	public ResponseEntity  setType(@PathVariable Long bookId, @RequestParam(value = "type") String type) {
+	@ResponseStatus(value = HttpStatus.OK)
+	public void setType(@PathVariable Long bookId, @RequestParam(value = "type") String type) {
 		SharedType sharedType = null;
 		switch (type) {
-			case "public" :
+			case "public":
 				sharedType = SharedType.PUBLIC;
 				break;
-			case "private" :
+			case "private":
 				sharedType = SharedType.PRIVATE;
 				break;
 		}
-		try {
-			bookService.setSharedType(bookId, sharedType);
-		} catch (Exception e) {
-			return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
 
-		return new ResponseEntity(HttpStatus.OK);
+		bookService.setSharedType(bookId, sharedType);
 	}
 
 	@RequestMapping(value = "/book/share/{bookId}", method = RequestMethod.POST, params = {"email"})
-	public ResponseEntity  shareBook(@PathVariable Long bookId, @RequestParam(value = "email") String email) {
-		try {
-			bookService.shareBook(bookId, email);
-		} catch (RuntimeException e) {
-			e.printStackTrace();
-			return new ResponseEntity(HttpStatus.BAD_REQUEST);
-		}
-
-		return new ResponseEntity(HttpStatus.OK);
+	@ResponseStatus(value = HttpStatus.CREATED)
+	public void shareBook(@PathVariable Long bookId, @RequestParam(value = "email") String email) {
+		bookService.shareBook(bookId, email);
 	}
 
 	@RequestMapping(value = "/books/{bookId}/users/{userId}/delete", method = RequestMethod.POST)
-	public ResponseEntity  unShareBook(@PathVariable Long bookId, @PathVariable Long userId) {
+	public ResponseEntity unShareBook(@PathVariable Long bookId, @PathVariable Long userId) {
 		bookService.unShareBook(bookId, userId);
 
 		return new ResponseEntity(HttpStatus.OK);

@@ -9,7 +9,6 @@
         <result column="PUB_DATE" property="publicationDate" />
         <result column="FILE_NAME" property="fileName" />
         <result column="BOOK_SIZE" property="size" javaType="java.lang.Long" />
-        <result column="PATH" property="path" />
         <result column="SHA1" property="sha1" />
         <result column="EMAIL" property="owner" />
         <result column="LANGUAGE_NAME" property="language" />
@@ -17,6 +16,7 @@
         <result column="ANNOTATION" property="annotation" />
         <result column="ISBN" property="isbn" />
         <result column="SHARED_TYPE_NAME" property="sharedType" />
+        <result column="STORED_INDEX" property="storedIndex" />
         <collection column="GENRE_NAME" property="genres" javaType="ArrayList" ofType="String"/>
     </resultMap>
 
@@ -34,14 +34,14 @@
                   PUB_DATE,
                   FILE_NAME,
                   BOOK_SIZE,
-                  PATH,
                   SHA1,
                   EMAIL,
                   LANGUAGE_NAME,
                   BOOK_TYPE_NAME,
                   ANNOTATION,
                   ISBN,
-                  SHARED_TYPE_NAME
+                  SHARED_TYPE_NAME,
+                  STORED_INDEX
                 FROM
                   BOOKS
                 INNER JOIN
@@ -85,14 +85,14 @@
           PUB_DATE,
           FILE_NAME,
           BOOK_SIZE,
-          PATH,
           SHA1,
           EMAIL,
           LANGUAGE_NAME,
           BOOK_TYPE_NAME,
           ANNOTATION,
           ISBN,
-          SHARED_TYPE_NAME
+          SHARED_TYPE_NAME,
+          STORED_INDEX
         FROM
           BOOKS
         INNER JOIN
@@ -126,14 +126,14 @@
           PUB_DATE,
           FILE_NAME,
           BOOK_SIZE,
-          PATH,
           SHA1,
           EMAIL,
           LANGUAGE_NAME,
           BOOK_TYPE_NAME,
           ANNOTATION,
           ISBN,
-          SHARED_TYPE_NAME
+          SHARED_TYPE_NAME,
+          STORED_INDEX
         FROM
           BOOKS
         INNER JOIN
@@ -149,7 +149,113 @@
           SHARED_TYPES
             ON BOOKS.ID_SHARED_TYPE = SHARED_TYPES.SHARED_TYPE_ID
         WHERE
-          BOOK_ID = #{id}
+          BOOK_ID = #{id,javaType=Long,jdbcType=NUMERIC}
+    </select>
+
+    <select id="getBookForReadingById" resultMap="bookMap">
+        SELECT
+          GENRE_NAME,
+          BOOK_ID,
+          AUTHOR,
+          TITLE,
+          PUB_DATE,
+          FILE_NAME,
+          BOOK_SIZE,
+          SHA1,
+          EMAIL,
+          LANGUAGE_NAME,
+          BOOK_TYPE_NAME,
+          ANNOTATION,
+          ISBN,
+          SHARED_TYPE_NAME,
+          STORED_INDEX
+        FROM
+          BOOKS
+        INNER JOIN
+          USERS
+            ON BOOKS.ID_OWNER = USERS.USER_ID
+        INNER JOIN
+          LANGUAGES
+            ON BOOKS.ID_LANG = LANGUAGES.LANGUAGE_ID
+        INNER JOIN
+          BOOK_TYPES
+            ON BOOKS.ID_BOOK_TYPE = BOOK_TYPES.BOOK_TYPE_ID
+        INNER JOIN
+          SHARED_TYPES
+            ON BOOKS.ID_SHARED_TYPE = SHARED_TYPES.SHARED_TYPE_ID
+        INNER JOIN
+          BOOKS_GENRES
+            ON BOOKS.BOOK_ID = BOOKS_GENRES.BOOK_ID
+        INNER JOIN
+          GENRES
+            ON BOOKS_GENRES.GENRE_ID = GENRES.GENRE_ID
+        LEFT JOIN
+          SHARED
+            ON BOOKS.BOOK_ID = SHARED.ID_BOOK
+        WHERE
+          (EMAIL = #{userEmail}
+            OR
+          UPPER(SHARED_TYPE_NAME) = 'PUBLIC'
+            OR
+          SHARED.ID_GRANTEE = (SELECT USER_ID FROM USERS WHERE EMAIL = #{userEmail}))
+            AND
+          BOOK_ID = #{bookId}
+        ORDER BY BOOKS.PUB_DATE DESC
+    </select>
+    
+    <select id="getBooksByStoredIndex" resultMap="bookMap">
+        SELECT
+          BOOK_ID,
+          AUTHOR,
+          TITLE,
+          PUB_DATE,
+          FILE_NAME,
+          BOOK_SIZE,
+          SHA1,
+          EMAIL,
+          LANGUAGE_NAME,
+          BOOK_TYPE_NAME,
+          ANNOTATION,
+          ISBN,
+          SHARED_TYPE_NAME,
+          STORED_INDEX
+        FROM
+          BOOKS
+        INNER JOIN
+          USERS
+            ON BOOKS.ID_OWNER = USERS.USER_ID
+        INNER JOIN
+          LANGUAGES
+            ON BOOKS.ID_LANG = LANGUAGES.LANGUAGE_ID
+        INNER JOIN
+          BOOK_TYPES
+            ON BOOKS.ID_BOOK_TYPE = BOOK_TYPES.BOOK_TYPE_ID
+        INNER JOIN
+          SHARED_TYPES
+            ON BOOKS.ID_SHARED_TYPE = SHARED_TYPES.SHARED_TYPE_ID
+        WHERE
+          STORED_INDEX = #{storedIndex,javaType=Long,jdbcType=NUMERIC}
+    </select>
+
+    <select id="countBookByStoredIndex" resultType="java.lang.Long">
+        SELECT
+          COUNT(*)
+        FROM
+          BOOKS
+        INNER JOIN
+          USERS
+            ON BOOKS.ID_OWNER = USERS.USER_ID
+        INNER JOIN
+          LANGUAGES
+            ON BOOKS.ID_LANG = LANGUAGES.LANGUAGE_ID
+        INNER JOIN
+          BOOK_TYPES
+            ON BOOKS.ID_BOOK_TYPE = BOOK_TYPES.BOOK_TYPE_ID
+        INNER JOIN
+          SHARED_TYPES
+            ON BOOKS.ID_SHARED_TYPE = SHARED_TYPES.SHARED_TYPE_ID
+        WHERE
+          STORED_INDEX = #{storedIndex,javaType=Long,jdbcType=NUMERIC}
     </select>
 
     <select id="add" parameterType="ua.miratech.zhukov.dto.Book" statementType="CALLABLE">
@@ -159,7 +265,6 @@
             ,#{publicationDate}
             ,#{fileName}
             ,#{size,javaType=LONG}
-            ,#{path}
             ,#{sha1}
             ,#{owner}
             ,#{language}
@@ -172,7 +277,16 @@
     </select>
 
     <delete id="delete">
-        DELETE FROM BOOKS WHERE BOOK_ID = #{bookId}
+        DELETE FROM
+          BOOKS
+        WHERE
+          BOOK_ID = #{bookId}
+            AND
+          (
+            ID_OWNER = (SELECT USER_ID FROM USERS WHERE EMAIL = #{userEmail})
+              OR
+            (SELECT ROLE_NAME FROM USERS INNER JOIN ROLES ON USERS.ROLE_ID = ROLES.ROLE_ID WHERE EMAIL = #{userEmail}) = 'ROLE_ADMIN'
+          )
     </delete>
 
     <select id="addGenre" parameterType="ua.miratech.zhukov.dto.Book" statementType="CALLABLE">
@@ -186,19 +300,18 @@
           ID_SHARED_TYPE = (SELECT SHARED_TYPE_ID FROM SHARED_TYPES WHERE UPPER(SHARED_TYPE_NAME) = #{sharedType})
         WHERE
           BOOK_ID = #{bookId}
+            AND
+          ID_OWNER = (SELECT USER_ID FROM USERS WHERE EMAIL = #{userEmail})
     </update>
 
-    <insert id="share">
-        INSERT INTO SHARED (
-              ID_BOOK
-            , ID_OWNER
-            , ID_GRANTEE
-        ) VALUES (
+    <select id="share" parameterType="ua.miratech.zhukov.dto.mapper.ShareInParam" statementType="CALLABLE">
+       {#{resultStatus,javaType=Integer,jdbcType=NUMERIC,mode=OUT} = call SHARE_BOOK (
               #{bookId}
-            , (SELECT USER_ID FROM USERS WHERE EMAIL = #{owner})
-            , (SELECT USER_ID FROM USERS WHERE EMAIL = #{grantee})
-        )
-    </insert>
+            , #{ownerEmail}
+            , #{granteeEmail}
+          )
+       }
+    </select>
 
     <delete id="unShareBook">
       DELETE FROM SHARED WHERE

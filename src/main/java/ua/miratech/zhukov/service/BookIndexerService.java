@@ -1,4 +1,4 @@
-package ua.miratech.zhukov.mapper.implementation;
+package ua.miratech.zhukov.service;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.lucene.analysis.Analyzer;
@@ -14,10 +14,12 @@ import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ua.miratech.zhukov.dto.IndexBook;
 import ua.miratech.zhukov.dto.SearchBook;
 import ua.miratech.zhukov.mapper.BookIndexer;
+import ua.miratech.zhukov.util.component.EbookStorage;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,20 +27,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class BookIndexerImpl implements BookIndexer {
+public class BookIndexerService implements BookIndexer {
 
-	private static final String INDEX_PATH = "D:/EBOOKS_STORAGE/INDEX_CATALOGUE";
 	private static final String CONTENT = "content";
 	private static final String AUTHOR = "author";
 	private static final String TITLE = "title";
 	private static final String LANGUAGE = "language";
 	private static final String GENRE = "genre";
 
+	@Autowired
+	private EbookStorage ebookStorage;
+
 	@Override
 	public synchronized void doIndex(IndexBook book) throws IOException {
 		Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_46);
 		IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_46, analyzer);
-		Directory dir = FSDirectory.open(new File(INDEX_PATH));
+		Directory dir = FSDirectory.open(new File(ebookStorage.getIndexCatalogue()));
 
 		IndexWriter writer = new IndexWriter(dir, iwc);
 		createIndex(writer, book);
@@ -119,21 +123,21 @@ public class BookIndexerImpl implements BookIndexer {
 	}
 
 	private List<Long> doSearch (Query query) throws IOException {
-		IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(INDEX_PATH)));
+		IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(ebookStorage.getIndexCatalogue())));
 		IndexSearcher searcher = new IndexSearcher(reader);
 
 		TopDocs results = searcher.search(query, 10);
 		ScoreDoc[] hits = results.scoreDocs;
-		List<Long> ids = new ArrayList<>();
+		List<Long> storedIndexes = new ArrayList<>();
 		for (ScoreDoc hit : hits) {
 			Document doc = searcher.doc(hit.doc);
 			String path = doc.get("path");
-			Long id = Long.parseLong(FilenameUtils.removeExtension(new File(path).getName()));
-			ids.add(id);
+			Long storedIndex = Long.parseLong(FilenameUtils.removeExtension(new File(path).getName()));
+			storedIndexes.add(storedIndex);
 		}
 		reader.close();
 
-		return ids;
+		return storedIndexes;
 	}
 
 }

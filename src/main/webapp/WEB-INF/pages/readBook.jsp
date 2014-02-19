@@ -1,8 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:set var="selections" value="${readingBook.content}" />
 
 <div class="page-header">
-	<h1>${bookMeta.title}</h1>
+	<h1>${readingBook.title}</h1>
 </div>
 
 <c:forEach begin="0" end="${selections.length - 1}" varStatus="loop">

@@ -2,6 +2,7 @@ package ua.miratech.zhukov.mapper;
 
 import org.apache.ibatis.annotations.Param;
 import ua.miratech.zhukov.dto.Book;
+import ua.miratech.zhukov.dto.mapper.ShareInParam;
 
 import java.util.List;
 
@@ -22,30 +23,43 @@ public interface BookMapper {
 			  @Param("id") Long id
 	);
 
+	public Book getBookForReadingById(
+			  @Param("userEmail") String userEmail
+			, @Param("bookId") Long bookId
+	);
+
+	public List<Book> getBooksByStoredIndex(
+			  @Param("storedIndex") Long storedIndex
+	);
+
+	public Long countBookByStoredIndex(
+			  @Param("storedIndex") Long storedIndex
+	);
+
 	public void add(Book book);
 
-	public void delete(Long bookId);
+	public int delete(
+			  @Param("userEmail") String userEmail
+			, @Param("bookId") Long bookId);
 
 	public void addGenre(
 			  @Param("userId") Long userId
 			, @Param("genreName") String genreName
 	);
 
-	public void setSharedType(
-			  @Param("bookId") Long bookId
+	public int setSharedType(
+			  @Param("userEmail") String userEmail
+			, @Param("bookId") Long bookId
 			, @Param("sharedType") String sharedType
 	);
 
-	public void share(
-			  @Param("bookId") Long bookId
-			, @Param("owner") String owner
-			, @Param("grantee") String grantee
-	);
+	public void share(ShareInParam shareInParam);
 
 	public void unShareBook(
 			  @Param("bookId") Long bookId
 			, @Param("ownerEmail") String ownerEmail
-			, @Param("granteeID") Long granteeID);
+			, @Param("granteeID") Long granteeID
+	);
 
 }
 

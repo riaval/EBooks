@@ -6,8 +6,6 @@ import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +17,7 @@ import ua.miratech.zhukov.util.FictionBookParser;
 import ua.miratech.zhukov.util.IndexCallable;
 import ua.miratech.zhukov.util.UnCompressCallable;
 import ua.miratech.zhukov.util.UploadedFile;
+import ua.miratech.zhukov.util.component.EbookStorage;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -37,25 +36,32 @@ public class FileService {
 	private BookMapper bookMapper;
 
 	@Autowired
-	SecurityService securityService;
+	private SecurityService securityService;
 
 	@Autowired()
 	@Qualifier("executorService")
 	private ExecutorService service;
 
 	@Autowired
-	@Qualifier("bookIndexerImpl")
+	@Qualifier("bookIndexerService")
 	private BookIndexer bookIndexer;
 
-	private static final String FILE_DIRECTORY = "D:/EBOOKS_STORAGE/MAIN_CATALOGUE/";
-	private static final String TEMP_DIRECTORY = "D:/EBOOKS_STORAGE/TEMP_FILES/";
+	@Autowired
+	private EbookStorage ebookStorage;
+
 	private static final String DEFAULT_SHARED_TYPE = "PRIVATE";
 	private static final int MAX_FILE_SIZE = 0x1800000;
 
 	public FileSystemResource uploadFile(Long bookId, HttpServletResponse response) {
-		Book book = bookMapper.getBookById(bookId);
+		String userEmail = securityService.getUserEmail();
 
-		String filePath = book.getPath() + book.getId() + "." + book.getExtension();
+		Book book = bookMapper.getBookForReadingById(userEmail, bookId);
+		if (book == null) {
+			throw new SecurityException(
+					"User [email:" + userEmail + "] is not authorized to read book [id:" + bookId + "]");
+		}
+
+		String filePath = ebookStorage.getMainCatalogue() + book.getStoredIndex() + "." + book.getExtension();
 		response.setHeader("content-Disposition", "attachment; filename=" + book.getFileName());
 
 		return new FileSystemResource(filePath);
@@ -112,7 +118,7 @@ public class FileService {
 		List<UploadedFile> uploadedFiles = new ArrayList<>();
 
 		Long systemTime = Calendar.getInstance().getTime().getTime();
-		String zipDirPath = TEMP_DIRECTORY + systemTime;
+		String zipDirPath = ebookStorage.getTempCatalogue() + systemTime;
 		String zipFilePath = zipDirPath + "." + FilenameUtils.getExtension(uf.getName());
 
 		File zipDir = new File(zipDirPath);
@@ -140,9 +146,9 @@ public class FileService {
 		return uploadedFiles;
 	}
 
-	public void deleteFile(Long id) {
-		File dir = new File(FILE_DIRECTORY);
-		FileFilter fileFilter = new WildcardFileFilter(id + ".*");
+	public void deleteFile(Long storedIndex) {
+		File dir = new File(ebookStorage.getMainCatalogue());
+		FileFilter fileFilter = new WildcardFileFilter(storedIndex + ".*");
 		File[] files = dir.listFiles(fileFilter);
 		for (File file : files) {
 			file.delete();
@@ -150,10 +156,6 @@ public class FileService {
 	}
 
 	private Book insertBook(String fileName, Long fileSize, byte[] fileContent, String userEmail) {
-//		System.out.println(securityService);
-//
-////		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-////		String userEmail = auth.getName();
 		FictionBookParser fbp = new FictionBookParser(fileContent);
 		Book book = new Book(
 				fbp.getAuthor(),
@@ -161,7 +163,6 @@ public class FileService {
 				Calendar.getInstance().getTime(),
 				fileName,
 				fileSize,
-				FILE_DIRECTORY,
 				Integer.toString(Arrays.hashCode(fileContent)),
 				userEmail,
 				fbp.getLanguage(),
@@ -172,16 +173,21 @@ public class FileService {
 				fbp.getGenres()
 		);
 		bookMapper.add(book);
+		Book insertedBook = bookMapper.getBookById(book.getId());
+
 		for (String each : fbp.getGenres()) {
-			bookMapper.addGenre(book.getId(), each);
+			bookMapper.addGenre(insertedBook.getId(), each);
 		}
 
-		return book;
+		return insertedBook;
 	}
 
 	private void saveFile(byte[] fileContent, Book book) throws IOException {
-		String filePath = FILE_DIRECTORY + book.getId() + "." + book.getExtension();
-		FileCopyUtils.copy(fileContent, new FileOutputStream(filePath));
+		String filePath = ebookStorage.getMainCatalogue() + book.getStoredIndex() + "." + book.getExtension();
+		File file = new File(filePath);
+		if (!file.exists()) {
+			FileCopyUtils.copy(fileContent, new FileOutputStream(filePath));
+		}
 	}
 
 	private void indexFile(byte[] fileContent, Book book) throws IOException {
@@ -190,7 +196,7 @@ public class FileService {
 				book.getTitle(),
 				book.getPublicationDate(),
 				book.getSize(),
-				book.getPath() + book.getId() + "." + book.getExtension(),
+				ebookStorage.getMainCatalogue() + book.getStoredIndex() + "." + book.getExtension(),
 				book.getLanguage(),
 				book.getAnnotation(),
 				book.getIsbn(),
@@ -200,26 +206,6 @@ public class FileService {
 
 		service.submit(new IndexCallable(indexBook, bookIndexer));
 	}
-
-//	private void unZipFile(MultipartFile mpf) throws IOException {
-//		Long systemTime = Calendar.getInstance().getTime().getTime();
-//		String zipDirPath = TEMP_DIRECTORY + systemTime;
-//		String zipFilePath = zipDirPath + "." + FilenameUtils.getExtension(mpf.getOriginalFilename());
-//
-//		File zipDir = new File(zipDirPath);
-//		File zipFile = new File(zipFilePath);
-//
-//		FileCopyUtils.copy(mpf.getBytes(), new FileOutputStream(zipFilePath));
-//		extractZip(zipFilePath);
-//
-//		Collection files = FileUtils.listFiles(zipDir, new String[]{"fb2"}, true);
-//		for (Object each : files) {
-//			File file = (File) each;
-//		}
-//
-//		FileUtils.deleteDirectory(zipDir);
-//		zipFile.delete();
-//	}
 
 	private void extractZip(String zipFile) throws IOException {
 		System.out.println(zipFile);

@@ -70,5 +70,7 @@
 	<jsp:include page="../templates/book-include.jsp" />
 </c:forEach>
 
+<jsp:include page="../templates/users-modal-include.jsp" />
+
 
 
