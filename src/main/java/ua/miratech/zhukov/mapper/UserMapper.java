@@ -14,4 +14,17 @@ public interface UserMapper {
 
 	public List<UserOut> getUserWithSharedBooks(@Param("bookId") Long bookId);
 
+	public int updateName(
+			  @Param("userEmail") String userEmail
+			, @Param("firstName") String firstName
+			, @Param("lastName") String lastName
+	);
+
+	public int updateFull(
+			  @Param("userEmail") String userEmail
+			, @Param("firstName") String firstName
+			, @Param("lastName") String lastName
+			, @Param("password") String password
+	);
+
 }

@@ -6,7 +6,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import ua.miratech.zhukov.dto.controller.UserInParam;
+import ua.miratech.zhukov.dto.controller.CreatedUser;
 import ua.miratech.zhukov.service.UserService;
 
 import javax.validation.Valid;
@@ -28,17 +28,17 @@ public class SecurityController {
 	}
 
 	@RequestMapping(value = "/signup", method = RequestMethod.POST)
-	public String doSignUp(@Valid UserInParam userInParam, BindingResult result) {
+	public String doSignUp(@Valid CreatedUser createdUser, BindingResult result) {
 		if (result.hasErrors()) {
 			return "redirect:/signup";
 		}
 
-		boolean passMatch = userInParam.getPassword().equals(userInParam.getPasswordAgain());
+		boolean passMatch = createdUser.getPassword().equals(createdUser.getPasswordAgain());
 		if (!passMatch) {
 			return "redirect:/signup?error=not_match";
 		}
 
-		userService.createUser(userInParam);
+		userService.createUser(createdUser);
 		return "redirect:/login";
 	}
 

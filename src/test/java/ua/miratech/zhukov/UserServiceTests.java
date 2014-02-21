@@ -31,10 +31,10 @@ public class UserServiceTests {
 		ConverterService converterService = new ConverterService();
 //		converterService.convertFile(Base64.encode(data));
 
-//		UserInParam userInParam = new UserInParam();
+//		CreatedUser userInParam = new CreatedUser();
     }
 
-//	private UserInParam userInParam;
+//	private CreatedUser userInParam;
 //
 //	{
 //		userInParam.setEmail("ls2294@gmail.com");

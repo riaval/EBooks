@@ -41,18 +41,18 @@
 	</div>
 </div>
 
-<form id="form" method="POST" action="${contextPath}/book/${book.id}/edit">
+<form id="form" method="POST" action="${contextPath}/users/${user.id}/edit">
 	<div class="form-group">
 		<label for="email">Email address</label>
-		<input name="email" type="email" autofocus="" required="true" disabled="disabled" class="form-control" id="email">
+		<input value="${user.email}" name="email" type="email" autofocus="" required="true" disabled="disabled" class="form-control" id="email">
 	</div>
 	<div class="form-group">
 		<label for="firstName">First name</label>
-		<input name="firstName" type="text" required="true" placeholder="John" class="form-control" id="firstName">
+		<input value="${user.firstName}" name="firstName" type="text" required="true" placeholder="John" class="form-control" id="firstName">
 	</div>
 	<div class="form-group">
 		<label for="lastName">Last name</label>
-		<input name="lastName" type="text" required="true" placeholder="Doe" class="form-control" id="lastName">
+		<input value="${user.lastName}" name="lastName" type="text" required="true" placeholder="Doe" class="form-control" id="lastName">
 	</div>
 
 	<div class="form-group">

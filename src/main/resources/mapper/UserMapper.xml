@@ -66,4 +66,18 @@
 
     </insert>
 
+    <update id="updateName">
+        UPDATE
+          USERS SET FIRST_NAME = #{firstName}, LAST_NAME = #{lastName}
+        WHERE
+          EMAIL = #{userEmail}
+    </update>
+
+    <update id="updateFull">
+        UPDATE
+          USERS SET FIRST_NAME = #{firstName}, LAST_NAME = #{lastName}, PASSWORD = #{password}
+        WHERE
+          EMAIL = #{userEmail}
+    </update>
+
 </mapper>
