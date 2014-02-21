@@ -51,6 +51,12 @@ public class BookController {
 		return "redirect:" + previousPage;
 	}
 
+	@RequestMapping(value = "/book/delete/{bookId}", method = RequestMethod.DELETE)
+	@ResponseStatus(value = HttpStatus.OK)
+	public void deleteBookAPI(@PathVariable Long bookId) throws IOException {
+		bookService.deleteBook(bookId);
+	}
+
 	@RequestMapping(value = "/book/{bookId}", method = RequestMethod.POST, params = {"type"})
 	@ResponseStatus(value = HttpStatus.OK)
 	public void setType(@PathVariable Long bookId, @RequestParam(value = "type") String type) {
@@ -79,5 +85,18 @@ public class BookController {
 
 		return new ResponseEntity(HttpStatus.OK);
 	}
+
+//	@RequestMapping(value = "/books/bb/", method = RequestMethod.POST, params = {"queue"})
+//	@ResponseStatus(value = HttpStatus.OK)
+//	public void test(@RequestParam(value = "queue") String queue, HttpServletRequest request) {
+//		System.out.println(queue);
+//		System.out.println(request.getParameter("queue"));
+//	}
+//
+//	@RequestMapping(value = "/books/bb/", method = RequestMethod.POST)
+//	@ResponseStatus(value = HttpStatus.OK)
+//	public void test(@RequestBody String body) {
+//		System.out.println(body);
+//	}
 
 }

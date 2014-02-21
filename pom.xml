@@ -198,6 +198,12 @@
         </dependency>
 
 
+        <dependency>
+            <groupId>com.sun.org.apache</groupId>
+            <artifactId>jaxp-ri</artifactId>
+            <version>1.4</version>
+        </dependency>
+
         <!-- Apache tiles -->
         <dependency>
             <groupId>org.apache.tiles</groupId>

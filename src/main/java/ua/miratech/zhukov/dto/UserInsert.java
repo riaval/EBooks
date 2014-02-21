@@ -1,5 +1,7 @@
 package ua.miratech.zhukov.dto;
 
+import ua.miratech.zhukov.dto.controller.UserInParam;
+
 import java.util.Date;
 
 public class UserInsert {
@@ -12,7 +14,7 @@ public class UserInsert {
 	private Date registrationDate;
 	private String role;
 
-	public UserInsert(UserIn user, Date registrationDate, String role) {
+	public UserInsert(UserInParam user, Date registrationDate, String role) {
 		this.email = user.getEmail();
 		this.firstName = user.getFirstName();
 		this.lastName = user.getLastName();

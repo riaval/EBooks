@@ -1,47 +1,45 @@
 package ua.miratech.zhukov;
 
-import org.junit.Before;
+import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.context.WebApplicationContext;
-import ua.miratech.zhukov.dto.UserIn;
-import ua.miratech.zhukov.mapper.UserMapper;
-import ua.miratech.zhukov.service.BookService;
-import ua.miratech.zhukov.service.UserService;
+import ua.miratech.zhukov.service.ConverterService;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("file:src/main/webapp/WEB-INF/test.xml")
 public class UserServiceTests {
 
-	@Mock
-	private UserMapper userMapper;
-
-	@InjectMocks
-	private UserService userService;
+//	@Mock
+//	private UserMapper userMapper;
+//
+//	@InjectMocks
+//	private UserService userService;
 
     @Test
     public void simple() throws Exception {
-//		UserIn userIn = new UserIn();
+		System.out.println("---------------------------------------------");
+		Path path = Paths.get("D:/A_Tangeled_Web-Alan_Maley.mobi");
+		byte[] data = Files.readAllBytes(path);
+//		System.out.println(new String(Base64.encode(data)));
+		Base64.encode(data);
+		ConverterService converterService = new ConverterService();
+//		converterService.convertFile(Base64.encode(data));
+
+//		UserInParam userInParam = new UserInParam();
     }
 
-	private UserIn userIn;
-
-	{
-		userIn.setEmail("ls2294@gmail.com");
-		userIn.setFirstName("firstName");
-		userIn.setLastName("lastName");
-		userIn.setPassword("");
-	}
+//	private UserInParam userInParam;
+//
+//	{
+//		userInParam.setEmail("ls2294@gmail.com");
+//		userInParam.setFirstName("firstName");
+//		userInParam.setLastName("lastName");
+//		userInParam.setPassword("");
+//	}
 }

@@ -36,6 +36,11 @@
         <put-attribute name="title" value="read"/>
     </definition>
 
+    <definition name="edit-page-tiles" extends="template-main">
+        <put-attribute name="content" value="/WEB-INF/pages/editBook.jsp"/>
+        <put-attribute name="title" value="Edit book"/>
+    </definition>
+
     <definition name="sign-in-tiles" extends="template-main">
         <put-attribute name="content" value="/WEB-INF/pages/login.jsp"/>
         <put-attribute name="title" value="Log in"/>
@@ -44,6 +49,11 @@
     <definition name="sign-up-tiles" extends="template-main">
         <put-attribute name="content" value="/WEB-INF/pages/signup.jsp"/>
         <put-attribute name="title" value="Sign up"/>
+    </definition>
+
+    <definition name="profile-page-tiles" extends="template-main">
+        <put-attribute name="content" value="/WEB-INF/pages/profile.jsp"/>
+        <put-attribute name="title" value="Profile"/>
     </definition>
 
     <definition name="jobs-tiles" extends="template-main">

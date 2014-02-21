@@ -293,6 +293,18 @@
       INSERT INTO BOOKS_GENRES (BOOK_ID, GENRE_ID) VALUES (#{userId}, GET_GENRE_ID_BY_NAME(#{genreName}))
     </select>
 
+    <update id="updateBook" parameterType="ua.miratech.zhukov.dto.controller.EditedBookInParam">
+      UPDATE
+        BOOKS
+      SET
+        AUTHOR = #{author},
+        TITLE = #{title},
+        ANNOTATION = #{annotation},
+        ISBN = #{isbn}
+      WHERE
+        BOOK_ID = #{id}
+    </update>
+
     <update id="setSharedType">
         UPDATE
           BOOKS

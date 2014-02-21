@@ -10,7 +10,7 @@ html, body {
 	height: auto;
 	margin: 0 auto -60px;
 	min-height: 100%;
-	padding: 0 0 60px;
+	padding: 0 0 70px;
 }
 
 #footer {
@@ -141,4 +141,9 @@ code {
 
 #contextPath{
 	display: none;
+}
+
+.right-title {
+	float: right;
+	margin-top: 20px;
 }

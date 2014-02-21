@@ -28,7 +28,7 @@ $(function () {
             disableImageResize: /Android(?!.*Chrome)|Opera/
                 .test(window.navigator.userAgent),
             maxFileSize: 5000000,
-            acceptFileTypes: /(\.|\/)(fb2|zip)$/i
+            acceptFileTypes: /(\.|\/)(fb2|epub|mobi|zip)$/i
         });
         // Upload server status check for browsers with CORS support:
 //        if ($.support.cors) {

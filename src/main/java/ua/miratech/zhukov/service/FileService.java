@@ -13,9 +13,9 @@ import ua.miratech.zhukov.dto.Book;
 import ua.miratech.zhukov.dto.IndexBook;
 import ua.miratech.zhukov.mapper.BookMapper;
 import ua.miratech.zhukov.util.FictionBookParser;
-import ua.miratech.zhukov.util.IndexCallable;
-import ua.miratech.zhukov.util.UnCompressCallable;
-import ua.miratech.zhukov.util.UploadedFile;
+import ua.miratech.zhukov.util.thread.IndexCallable;
+import ua.miratech.zhukov.util.thread.UnCompressCallable;
+import ua.miratech.zhukov.dto.UploadedFile;
 import ua.miratech.zhukov.util.component.EbookStorage;
 
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +47,9 @@ public class FileService {
 
 	@Autowired
 	private EbookStorage ebookStorage;
+
+	@Autowired
+	private ConverterService converterService;
 
 	private static final String DEFAULT_SHARED_TYPE = "PRIVATE";
 	private static final int MAX_FILE_SIZE = 0x1800000;
@@ -80,6 +83,14 @@ public class FileService {
 					mpf.getContentType()
 			);
 
+			String extension = FilenameUtils.getExtension(uploadedFile.getName());
+			if ("epub".equals(extension) || "mobi".equals(extension)) {
+				byte[] newData = converterService.convertFile(uploadedFile.getBytes(), uploadedFile.getName());
+				uploadedFile.setBytes(newData);
+				String fileSimpleName = FilenameUtils.getName(uploadedFile.getName());
+				uploadedFile.setName(fileSimpleName + "." + extension);
+			}
+
 			String userEmail = securityService.getUserEmail();
 
 			if ("application/zip".equals(mpf.getContentType())) {
@@ -102,13 +113,17 @@ public class FileService {
 		// Insert book to database
 		Book book = insertBook(uf.getName(), uf.getSize(), uf.getBytes(), userEmail);
 
-		// Save file to the Hard Drive
-		saveFile(uf.getBytes(), book);
+		Long storedIndexes = bookMapper.countBookByStoredIndex(book.getStoredIndex());
+		if (storedIndexes == 1) {
+			// Save file to the Hard Drive
+			saveFile(uf.getBytes(), book);
 
-		// Index file
-		indexFile(uf.getBytes(), book);
+			// Index file
+			indexFile(uf.getBytes(), book);
+		}
 
 		uf.setType("text");
+		uf.setDeleteUrl("/Ebooks/book/delete/" + book.getId());
 
 		return uf;
 	}
@@ -181,12 +196,14 @@ public class FileService {
 		return insertedBook;
 	}
 
-	private void saveFile(byte[] fileContent, Book book) throws IOException {
+	private boolean saveFile(byte[] fileContent, Book book) throws IOException {
 		String filePath = ebookStorage.getMainCatalogue() + book.getStoredIndex() + "." + book.getExtension();
 		File file = new File(filePath);
 		if (!file.exists()) {
 			FileCopyUtils.copy(fileContent, new FileOutputStream(filePath));
+			return false;
 		}
+		return true;
 	}
 
 	private void indexFile(byte[] fileContent, Book book) throws IOException {

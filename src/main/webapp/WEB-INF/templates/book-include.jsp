@@ -38,21 +38,23 @@
 			<!-- show pen icon -->
 			<img height="17px" width="17px" src="<c:url value="/img/pen.png" />" alt="">
 			<!-- show author name as link -->
-			<a href="http://english-e-books.net/author/richard-curtis/" title="All books by Richard Curtis"
+			<a href="${contextPath}/search?content=&title=&author=${book.author}&genre=&language=&searchType=extended"
+			   title="All books by Richard Curtis"
 			   rel="author">${book.author}</a>
 		</p>
 
 		<div>
-			<strong><spring:message code="language"/>: </strong><a href="#">${book.language}</a>
+			<strong><spring:message code="language"/>: </strong>
+			<a href="${contextPath}/search?content=&title=&author=&genre=&language=${book.language}&searchType=extended">${book.language}</a>
 		</div>
 		<div>
 			<strong><spring:message code="genres"/>: </strong>
 			<c:forEach var="genre" items="${book.genres}">
-				<a href="#">${genre}</a>
+				<a href="${contextPath}/search?content=&title=&author=&genre=${genre}&language=&searchType=extended">${genre}</a>
 			</c:forEach>
 		</div>
 		<p>
-			<strong>IBSN: </strong><a href="#">${book.isbn}</a>
+			<strong>IBSN: </strong>${book.isbn}
 		</p>
 
 		<div>
@@ -65,8 +67,8 @@
 
 		<c:if test="${user eq book.owner}">
 		<div class="btn-group">
-			<%--<a href="#" type="button" class="btn btn-success btn-xs">Share</a>--%>
 			<button class="btn btn-success btn-xs" onclick="share(${book.id})"><spring:message code="share"/></button>
+			<a href="${contextPath}/book/${book.id}/edit" type="button" class="btn btn-warning btn-xs">&nbsp;Edit&nbsp;</a>
 			<a href="${contextPath}/book/delete/${book.id}" type="button" class="btn btn-danger btn-xs"><spring:message code="delete"/></a>
 		</div>
 		</c:if>

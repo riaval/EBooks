@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.NodeList;
 import ua.miratech.zhukov.dto.*;
+import ua.miratech.zhukov.dto.controller.EditedBookInParam;
 import ua.miratech.zhukov.dto.mapper.ShareInParam;
 import ua.miratech.zhukov.mapper.BookMapper;
 import ua.miratech.zhukov.util.FictionBookParser;
@@ -35,17 +36,10 @@ public class BookService {
 	private BookIndexerService bookIndexerService;
 
 	@Autowired
-	EbookStorage ebookStorage;
+	private EbookStorage ebookStorage;
 
 	public ReadingBook getReadingBookById(Long bookId) throws IOException, SecurityException {
-		String userEmail = securityService.getUserEmail();
-		Book book = bookMapper.getBookForReadingById(userEmail, bookId);
-
-		if (book == null) {
-			// TODO logging
-			throw new SecurityException(
-					"User [email:" + userEmail + "] is not authorized to read book [id:" + bookId + "]");
-		}
+		Book book = getBookForEditing(bookId);
 
 		File file = new File(ebookStorage.getMainCatalogue() + book.getStoredIndex() + "." + book.getExtension());
 		FileInputStream fis = null;
@@ -64,11 +58,25 @@ public class BookService {
 				if (fis != null)
 					fis.close();
 			} catch (IOException ex) {
+				// TODO Add Logging
 				ex.printStackTrace();
 			}
 		}
 
 		return new ReadingBook(book, content);
+	}
+
+	public Book getBookForEditing(Long bookId) {
+		String userEmail = securityService.getUserEmail();
+		Book book = bookMapper.getBookForReadingById(userEmail, bookId);
+
+		if (book == null) {
+			// TODO logging
+			throw new SecurityException(
+					"User [email:" + userEmail + "] is not authorized to read book [id:" + bookId + "]");
+		}
+
+		return book;
 	}
 
 	public List<Book> getMyBooks() {
@@ -111,6 +119,14 @@ public class BookService {
 			bookIndexerService.deleteIndex(book.getStoredIndex() + "." + book.getExtension());
 		}
 
+	}
+
+	public void updateBook(EditedBookInParam editedBookInParam) {
+		System.out.println(editedBookInParam.getTitle());
+		System.out.println(editedBookInParam.getAuthor());
+		System.out.println(editedBookInParam.getAnnotation());
+		System.out.println(editedBookInParam.getIsbn());
+		bookMapper.updateBook(editedBookInParam);
 	}
 
 	public void setSharedType(Long bookId, SharedType sharedType) {

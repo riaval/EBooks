@@ -8,19 +8,30 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import ua.miratech.zhukov.dto.UserOut;
 import ua.miratech.zhukov.mapper.UserMapper;
+import ua.miratech.zhukov.service.UserService;
 
 import java.util.List;
 
 @Controller
 public class UserController {
 
+	@Autowired
+	private UserService userService;
+
 	@Autowired(required = false)
-	UserMapper userMapper;
+	private UserMapper userMapper;
 
 	@RequestMapping(value = "/book/{bookId}/users", method = RequestMethod.GET)
 	@ResponseBody
 	public List<UserOut> getUserWithSharedBooks(@PathVariable Long bookId) {
 		return userMapper.getUserWithSharedBooks(bookId);
+	}
+
+	@RequestMapping(value = "/profile", method = RequestMethod.GET)
+	public String printProfilePage() {
+		UserOut user = userService.getCurrentUser();
+
+		return "profile-page-tiles";
 	}
 
 }
