@@ -2,13 +2,13 @@ package ua.miratech.zhukov.controller;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
-import ua.miratech.zhukov.dto.Book;
+import ua.miratech.zhukov.dto.output.Book;
 import ua.miratech.zhukov.dto.SearchBook;
 import ua.miratech.zhukov.service.BookService;
+import ua.miratech.zhukov.service.implementation.BookServiceImpl;
 
 import java.io.IOException;
 import java.util.List;

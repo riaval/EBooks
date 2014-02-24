@@ -11,7 +11,7 @@ public class UploadedFile {
 	private String name;
 	private long size;
 	private String type;
-	private String deleteUrl = "http://example.org/files/picture1.jpg";
+	private String deleteUrl;
 	private String deleteType = "DELETE";
 
 	private byte[] bytes;

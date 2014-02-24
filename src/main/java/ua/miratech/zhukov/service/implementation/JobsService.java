@@ -1,4 +1,4 @@
-package ua.miratech.zhukov.service;
+package ua.miratech.zhukov.service.implementation;
 
 import org.springframework.stereotype.Component;
 

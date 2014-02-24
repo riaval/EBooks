@@ -3,11 +3,14 @@ package ua.miratech.zhukov.service;
 import org.apache.lucene.queryparser.classic.ParseException;
 import ua.miratech.zhukov.dto.IndexBook;
 import ua.miratech.zhukov.dto.SearchBook;
+import ua.miratech.zhukov.dto.output.Book;
 
 import java.io.IOException;
 import java.util.List;
 
 public interface BookIndexerService {
+
+	void indexFile(byte[] fileContent, Book book) throws IOException;
 
 	public void doIndex(IndexBook book) throws IOException;
 

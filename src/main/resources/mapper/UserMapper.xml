@@ -45,6 +45,8 @@
             ON USERS.ROLE_ID = ROLES.ROLE_ID
         WHERE
           ID_BOOK = #{bookId}
+            AND
+          ID_OWNER = (SELECT USER_ID FROM USERS WHERE EMAIL = #{userEmail})
     </select>
 
     <insert id="createNewUser" parameterType="ua.miratech.zhukov.dto.UserInsert" useGeneratedKeys="true" keyProperty="id" keyColumn="USER_ID" >

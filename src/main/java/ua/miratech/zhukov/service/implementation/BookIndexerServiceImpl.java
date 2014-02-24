@@ -1,4 +1,4 @@
-package ua.miratech.zhukov.service;
+package ua.miratech.zhukov.service.implementation;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.lucene.analysis.Analyzer;
@@ -15,18 +15,23 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ua.miratech.zhukov.dto.IndexBook;
 import ua.miratech.zhukov.dto.SearchBook;
+import ua.miratech.zhukov.dto.output.Book;
+import ua.miratech.zhukov.service.BookIndexerService;
 import ua.miratech.zhukov.util.component.EbookStorage;
+import ua.miratech.zhukov.util.thread.IndexCallable;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 @Component
-public class BookIndexerServiceServiceImpl implements BookIndexerService {
+public class BookIndexerServiceImpl implements BookIndexerService {
 
 	private static final String CONTENT = "content";
 	private static final String AUTHOR = "author";
@@ -35,7 +40,29 @@ public class BookIndexerServiceServiceImpl implements BookIndexerService {
 	private static final String GENRE = "genre";
 
 	@Autowired
+	@Qualifier("executorService")
+	private ExecutorService service;
+
+	@Autowired
 	private EbookStorage ebookStorage;
+
+	@Override
+	public void indexFile(byte[] fileContent, Book book) throws IOException {
+		IndexBook indexBook = new IndexBook(
+				book.getAuthor(),
+				book.getTitle(),
+				book.getPublicationDate(),
+				book.getSize(),
+				book.getStoredIndex() + "." + book.getExtension(),
+				book.getLanguage(),
+				book.getAnnotation(),
+				book.getIsbn(),
+				book.getGenres(),
+				fileContent
+		);
+
+		service.submit(new IndexCallable(indexBook, this));
+	}
 
 	@Override
 	public synchronized void doIndex(IndexBook book) throws IOException {

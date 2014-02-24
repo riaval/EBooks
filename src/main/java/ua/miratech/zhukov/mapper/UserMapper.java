@@ -12,7 +12,10 @@ public interface UserMapper {
 
 	public UserOut getUserByEmail(@Param("email") String email);
 
-	public List<UserOut> getUserWithSharedBooks(@Param("bookId") Long bookId);
+	public List<UserOut> getUserWithSharedBooks(
+			  @Param("userEmail") String userEmail
+			, @Param("bookId") Long bookId
+	);
 
 	public int updateName(
 			  @Param("userEmail") String userEmail

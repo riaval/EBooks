@@ -9,6 +9,7 @@ import java.util.List;
 
 public class UserMapperMock implements UserMapper {
 
+
 	@Override
 	public void createNewUser(UserInsert user) {
 
@@ -20,7 +21,7 @@ public class UserMapperMock implements UserMapper {
 	}
 
 	@Override
-	public List<UserOut> getUserWithSharedBooks(@Param("bookId") Long bookId) {
+	public List<UserOut> getUserWithSharedBooks(@Param("userEmail") String userEmail, @Param("bookId") Long bookId) {
 		return null;
 	}
 
@@ -33,5 +34,4 @@ public class UserMapperMock implements UserMapper {
 	public int updateFull(@Param("userEmail") String userEmail, @Param("firstName") String firstName, @Param("lastName") String lastName, @Param("password") String password) {
 		return 0;
 	}
-
 }

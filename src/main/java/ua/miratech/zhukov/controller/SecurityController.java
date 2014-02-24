@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import ua.miratech.zhukov.dto.controller.CreatedUser;
 import ua.miratech.zhukov.service.UserService;
+import ua.miratech.zhukov.service.implementation.UserServiceImpl;
 
 import javax.validation.Valid;
 
@@ -28,7 +29,7 @@ public class SecurityController {
 	}
 
 	@RequestMapping(value = "/signup", method = RequestMethod.POST)
-	public String doSignUp(@Valid CreatedUser createdUser, BindingResult result) {
+	public String signUp(@Valid CreatedUser createdUser, BindingResult result) {
 		if (result.hasErrors()) {
 			return "redirect:/signup";
 		}

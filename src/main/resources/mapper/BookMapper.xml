@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ua.miratech.zhukov.mapper.BookMapper">
 
-    <resultMap id="bookMap" type="ua.miratech.zhukov.dto.Book">
+    <resultMap id="bookMap" type="ua.miratech.zhukov.dto.output.Book">
         <id column="BOOK_ID" property="id" />
         <result column="AUTHOR" property="author" />
         <result column="TITLE" property="title" />
@@ -152,7 +152,7 @@
           BOOK_ID = #{id,javaType=Long,jdbcType=NUMERIC}
     </select>
 
-    <select id="getBookForReadingById" resultMap="bookMap">
+    <select id="getBookForUserById" resultMap="bookMap">
         SELECT
           GENRE_NAME,
           BOOK_ID,
@@ -258,7 +258,7 @@
           STORED_INDEX = #{storedIndex,javaType=Long,jdbcType=NUMERIC}
     </select>
 
-    <select id="add" parameterType="ua.miratech.zhukov.dto.Book" statementType="CALLABLE">
+    <select id="add" parameterType="ua.miratech.zhukov.dto.output.Book" statementType="CALLABLE">
         {#{id,javaType=Long,jdbcType=NUMERIC,mode=OUT} = call  INSERT_BOOK(
              #{author}
             ,#{title}
@@ -289,20 +289,26 @@
           )
     </delete>
 
-    <select id="addGenre" parameterType="ua.miratech.zhukov.dto.Book" statementType="CALLABLE">
+    <select id="addGenre" parameterType="ua.miratech.zhukov.dto.output.Book" statementType="CALLABLE">
       INSERT INTO BOOKS_GENRES (BOOK_ID, GENRE_ID) VALUES (#{userId}, GET_GENRE_ID_BY_NAME(#{genreName}))
     </select>
 
-    <update id="updateBook" parameterType="ua.miratech.zhukov.dto.controller.EditedBookInParam">
-      UPDATE
-        BOOKS
-      SET
-        AUTHOR = #{author},
-        TITLE = #{title},
-        ANNOTATION = #{annotation},
-        ISBN = #{isbn}
-      WHERE
-        BOOK_ID = #{id}
+    <update id="updateBook" parameterType="ua.miratech.zhukov.dto.controller.EditedBook" statementType="CALLABLE">
+      DECLARE
+        BEGIN
+          UPDATE
+            BOOKS
+          SET
+            AUTHOR = #{author},
+            TITLE = #{title},
+            ANNOTATION = #{annotation},
+            ISBN = #{isbn}
+          WHERE
+            BOOK_ID = #{id}
+              AND
+            ID_OWNER = (SELECT USER_ID FROM USERS WHERE EMAIL = #{userEmail});
+          #{updatedCount,javaType=Integer,jdbcType=NUMERIC,mode=OUT} := SQL%ROWCOUNT;
+        END;
     </update>
 
     <update id="setSharedType">

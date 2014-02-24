@@ -4,11 +4,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ua.miratech.zhukov.service.ConverterService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("file:src/main/webapp/WEB-INF/test.xml")
-public class ConverterTests {
+@ContextConfiguration("file:../../../../../main/webapp/WEB-INF/test-context/controller.xml")
+public class BookControllerTests {
 
 	@Test
 	public void simple() throws Exception {

@@ -4,14 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import ua.miratech.zhukov.dto.ReadingBook;
 import ua.miratech.zhukov.dto.SharedType;
+import ua.miratech.zhukov.dto.output.DownloadBook;
 import ua.miratech.zhukov.service.BookService;
-import ua.miratech.zhukov.service.FileService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,10 +20,7 @@ import java.io.IOException;
 public class BookController {
 
 	@Autowired
-	FileService fileService;
-
-	@Autowired
-	BookService bookService;
+	private BookService bookService;
 
 	@RequestMapping(value = "/book/{bookId}", method = RequestMethod.GET)
 	public String printReadBookPage(@PathVariable Long bookId, ModelMap model) throws Exception {
@@ -39,12 +35,15 @@ public class BookController {
 	})
 	@ResponseBody
 	public FileSystemResource downloadFile(@PathVariable Long bookId, HttpServletResponse response) {
-		System.out.println(bookId);
-		return fileService.uploadFile(bookId, response);
+		DownloadBook book = bookService.downloadBook(bookId);
+
+		response.setHeader("content-Disposition", "attachment; filename=" + book.getFileName());
+
+		return new FileSystemResource(book.getFilePath());
 	}
 
 	@RequestMapping(value = "/book/delete/{bookId}", method = RequestMethod.GET)
-	public String deleteBook(@PathVariable Long bookId, HttpServletRequest request) throws IOException {
+	public String deleteBook(@PathVariable Long bookId, HttpServletRequest request) throws Exception {
 		bookService.deleteBook(bookId);
 
 		String previousPage = request.getHeader("Referer");
@@ -80,23 +79,9 @@ public class BookController {
 	}
 
 	@RequestMapping(value = "/books/{bookId}/users/{userId}/delete", method = RequestMethod.POST)
-	public ResponseEntity unShareBook(@PathVariable Long bookId, @PathVariable Long userId) {
+	@ResponseStatus(value = HttpStatus.OK)
+	public void unShareBook(@PathVariable Long bookId, @PathVariable Long userId) {
 		bookService.unShareBook(bookId, userId);
-
-		return new ResponseEntity(HttpStatus.OK);
 	}
-
-//	@RequestMapping(value = "/books/bb/", method = RequestMethod.POST, params = {"queue"})
-//	@ResponseStatus(value = HttpStatus.OK)
-//	public void test(@RequestParam(value = "queue") String queue, HttpServletRequest request) {
-//		System.out.println(queue);
-//		System.out.println(request.getParameter("queue"));
-//	}
-//
-//	@RequestMapping(value = "/books/bb/", method = RequestMethod.POST)
-//	@ResponseStatus(value = HttpStatus.OK)
-//	public void test(@RequestBody String body) {
-//		System.out.println(body);
-//	}
 
 }

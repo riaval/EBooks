@@ -9,6 +9,7 @@ import ua.miratech.zhukov.dto.UserOut;
 import ua.miratech.zhukov.dto.controller.EditedUser;
 import ua.miratech.zhukov.mapper.UserMapper;
 import ua.miratech.zhukov.service.UserService;
+import ua.miratech.zhukov.service.implementation.UserServiceImpl;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -19,13 +20,10 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 
-	@Autowired(required = false)
-	private UserMapper userMapper;
-
 	@RequestMapping(value = "/book/{bookId}/users", method = RequestMethod.GET)
 	@ResponseBody
 	public List<UserOut> getUserWithSharedBooks(@PathVariable Long bookId) {
-		return userMapper.getUserWithSharedBooks(bookId);
+		return userService.getUserWithSharedBooks(bookId);
 	}
 
 	@RequestMapping(value = "/profile", method = RequestMethod.GET)

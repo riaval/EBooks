@@ -1,192 +1,41 @@
 package ua.miratech.zhukov.service;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-import org.w3c.dom.NodeList;
-import ua.miratech.zhukov.dto.*;
-import ua.miratech.zhukov.dto.controller.EditedBookInParam;
-import ua.miratech.zhukov.dto.mapper.ShareInParam;
-import ua.miratech.zhukov.mapper.BookMapper;
-import ua.miratech.zhukov.util.FictionBookParser;
-import ua.miratech.zhukov.util.component.EbookStorage;
+import ua.miratech.zhukov.dto.ReadingBook;
+import ua.miratech.zhukov.dto.SearchBook;
+import ua.miratech.zhukov.dto.SharedType;
+import ua.miratech.zhukov.dto.UploadedFile;
+import ua.miratech.zhukov.dto.controller.EditedBook;
+import ua.miratech.zhukov.dto.output.Book;
+import ua.miratech.zhukov.dto.output.DownloadBook;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-@Service
-public class BookService {
+public interface BookService {
 
-	@Autowired(required = false)
-	private BookMapper bookMapper;
+	Long addBook(UploadedFile uploadedFile, String userEmail) throws IOException;
 
-	@Autowired
-	private FileService fileService;
+	ReadingBook getReadingBookById(Long bookId) throws IOException, SecurityException;
 
-	@Autowired
-	private SecurityService securityService;
+	void deleteBook(Long bookId) throws IOException;
 
-	@Autowired
-	@Qualifier("bookIndexerServiceServiceImpl")
-	private BookIndexerService bookIndexerService;
+	void setSharedType(Long bookId, SharedType sharedType);
 
-	@Autowired
-	private EbookStorage ebookStorage;
+	void shareBook(Long bookId, String email);
 
-	public ReadingBook getReadingBookById(Long bookId) throws IOException, SecurityException {
-		Book book = getBookForEditing(bookId);
+	void unShareBook(Long bookId, Long userId);
 
-		File file = new File(ebookStorage.getMainCatalogue() + book.getStoredIndex() + "." + book.getExtension());
-		FileInputStream fis = null;
-		NodeList content = null;
-		try {
-			fis = new FileInputStream(file);
-			byte[] bytes = IOUtils.toByteArray(fis);
-			FictionBookParser fbp = new FictionBookParser(bytes);
-			content = fbp.getContent();
-		} catch (IOException e) {
-			// TODO Add Logging
-			e.printStackTrace();
-			throw e;
-		} finally {
-			try {
-				if (fis != null)
-					fis.close();
-			} catch (IOException ex) {
-				// TODO Add Logging
-				ex.printStackTrace();
-			}
-		}
+	DownloadBook downloadBook(Long bookId);
 
-		return new ReadingBook(book, content);
-	}
+	Book getBookForEditing(Long bookId);
 
-	public Book getBookForEditing(Long bookId) {
-		String userEmail = securityService.getUserEmail();
-		Book book = bookMapper.getBookForReadingById(userEmail, bookId);
+	void updateBook(EditedBook book);
 
-		if (book == null) {
-			// TODO logging
-			throw new SecurityException(
-					"User [email:" + userEmail + "] is not authorized to read book [id:" + bookId + "]");
-		}
+	List<Book> getLastBooks();
 
-		return book;
-	}
+	List<Book> getMyBooks();
 
-	public List<Book> getMyBooks() {
-		String userEmail = securityService.getUserEmail();
+	List<Book> doSimpleSearch(String content);
 
-		return bookMapper.getMyBooks(userEmail, "DESC");
-	}
-
-	public List<Book> getLastBooks() {
-		String userEmail = securityService.getUserEmail();
-		int currentPage = 1;
-		int lastBooksAmount = 10;
-
-		return bookMapper.getLastBooks(currentPage, lastBooksAmount, userEmail);
-	}
-
-	public void deleteBook(Long bookId) throws IOException {
-		String userEmail = securityService.getUserEmail();
-
-		Book book = bookMapper.getBookById(bookId);
-
-		if (book == null) {
-			// TODO logging
-			throw new IllegalArgumentException("Book [id:" + bookId + "] not fount for deleting");
-		}
-
-		int deletedBooks = bookMapper.delete(userEmail, bookId);
-
-		if (deletedBooks == 0) {
-			// TODO logging
-			throw new SecurityException(
-					"User [email:" + userEmail + "] is not authorized to delete book [id:" + bookId + "]");
-		}
-
-		Long storedIndex = book.getStoredIndex();
-		Long count = bookMapper.countBookByStoredIndex(storedIndex);
-		System.out.println(count);
-		if (count == 0) {
-			fileService.deleteFile(book.getStoredIndex());
-			bookIndexerService.deleteIndex(book.getStoredIndex() + "." + book.getExtension());
-		}
-
-	}
-
-	public void updateBook(EditedBookInParam editedBookInParam) {
-		System.out.println(editedBookInParam.getTitle());
-		System.out.println(editedBookInParam.getAuthor());
-		System.out.println(editedBookInParam.getAnnotation());
-		System.out.println(editedBookInParam.getIsbn());
-		bookMapper.updateBook(editedBookInParam);
-	}
-
-	public void setSharedType(Long bookId, SharedType sharedType) {
-		String userEmail = securityService.getUserEmail();
-
-		int updatedBooks = bookMapper.setSharedType(userEmail, bookId, sharedType.name());
-
-		if (updatedBooks == 0) {
-			// TODO logging
-			throw new SecurityException(
-					"User [email:" + userEmail + "] is not authorized to change shared type book [id:" + bookId + "]");
-		}
-	}
-
-	public void shareBook(Long bookId, String granteeEmail) {
-		String ownerEmail = securityService.getUserEmail();
-		ShareInParam shareInParam = new ShareInParam(bookId, ownerEmail, granteeEmail);
-		bookMapper.share(shareInParam);
-		switch (shareInParam.getResultStatus()) {
-			case 0: throw new IllegalArgumentException("Already shared");
-			case -1: throw new IllegalArgumentException("User owner not found");
-			case -2: throw new IllegalArgumentException("User grantee not found");
-			case -3: throw new IllegalArgumentException("Book not found");
-			case -4: throw new IllegalArgumentException("Owner and grantee is the same user");
-			case -5: throw new SecurityException("User does not have required permissions");
-		}
-	}
-
-	public void unShareBook(Long bookId, Long userId) {
-		String ownerEmail = securityService.getUserEmail();
-		Book book = bookMapper.getBookById(bookId);
-
-		if (book == null) {
-			throw new IllegalArgumentException("Book [id:" + bookId + "] not fount for unsharing");
-		}
-
-		if (!ownerEmail.equals(book.getOwner())) {
-			throw new SecurityException(
-					"User [email:" + ownerEmail + "] is not authorized to do this acton");
-		}
-
-		bookMapper.unShareBook(bookId, ownerEmail, userId);
-	}
-
-	public List<Book> doSimpleSearch(String content) throws IOException, ParseException {
-		List<Long> storedIndexes = bookIndexerService.doSimpleSearch(content);
-		return getBooksFromStoredIndexes(storedIndexes);
-	}
-
-	public List<Book> doExtendedSearch(SearchBook searchBook) throws IOException, ParseException {
-		List<Long> storedIndexes = bookIndexerService.doExtendedSearch(searchBook);
-		return getBooksFromStoredIndexes(storedIndexes);
-	}
-
-	private List<Book> getBooksFromStoredIndexes(List<Long> storedIndexes) {
-		List<Book> books = new ArrayList<>();
-		for (Long each : storedIndexes) {
-			books.addAll(bookMapper.getBooksByStoredIndex(each));
-		}
-		return books;
-	}
-
+	List<Book> doExtendedSearch(SearchBook searchBook);
 }

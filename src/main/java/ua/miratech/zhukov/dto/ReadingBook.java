@@ -1,6 +1,7 @@
 package ua.miratech.zhukov.dto;
 
 import org.w3c.dom.NodeList;
+import ua.miratech.zhukov.dto.output.Book;
 
 public class ReadingBook extends Book {
 

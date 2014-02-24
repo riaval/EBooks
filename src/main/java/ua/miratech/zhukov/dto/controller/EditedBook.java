@@ -1,6 +1,6 @@
 package ua.miratech.zhukov.dto.controller;
 
-public class EditedBookInParam {
+public class EditedBook {
 
 	private Long id;
 	private String title;
@@ -9,6 +9,9 @@ public class EditedBookInParam {
 	private String language;
 	private String genres;
 	private String annotation;
+
+	private String userEmail;
+	private Integer updatedCount;
 
 	public Long getId() {
 		return id;
@@ -66,4 +69,19 @@ public class EditedBookInParam {
 		this.annotation = annotation;
 	}
 
+	public String getUserEmail() {
+		return userEmail;
+	}
+
+	public void setUserEmail(String userEmail) {
+		this.userEmail = userEmail;
+	}
+
+	public Integer getUpdatedCount() {
+		return updatedCount;
+	}
+
+	public void setUpdatedCount(Integer updatedCount) {
+		this.updatedCount = updatedCount;
+	}
 }

@@ -1,8 +1,8 @@
 package ua.miratech.zhukov.mapper;
 
 import org.apache.ibatis.annotations.Param;
-import ua.miratech.zhukov.dto.Book;
-import ua.miratech.zhukov.dto.controller.EditedBookInParam;
+import ua.miratech.zhukov.dto.controller.EditedBook;
+import ua.miratech.zhukov.dto.output.Book;
 import ua.miratech.zhukov.dto.mapper.ShareInParam;
 
 import java.util.List;
@@ -24,8 +24,8 @@ public interface BookMapper {
 			  @Param("id") Long id
 	);
 
-	public Book getBookForReadingById(
-			  @Param("userEmail") String userEmail
+	public Book getBookForUserById(
+			@Param("userEmail") String userEmail
 			, @Param("bookId") Long bookId
 	);
 
@@ -48,7 +48,7 @@ public interface BookMapper {
 			, @Param("genreName") String genreName
 	);
 
-	public void updateBook(EditedBookInParam editedBookInParam);
+	public void updateBook(EditedBook editedBook);
 
 	public int setSharedType(
 			  @Param("userEmail") String userEmail

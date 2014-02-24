@@ -1,4 +1,4 @@
-package ua.miratech.zhukov.dto;
+package ua.miratech.zhukov.dto.output;
 
 import java.util.Date;
 import java.util.List;
