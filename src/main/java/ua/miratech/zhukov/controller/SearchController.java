@@ -5,10 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import ua.miratech.zhukov.dto.controller.SearchedBook;
 import ua.miratech.zhukov.dto.output.Book;
-import ua.miratech.zhukov.dto.SearchBook;
 import ua.miratech.zhukov.service.BookService;
-import ua.miratech.zhukov.service.implementation.BookServiceImpl;
 
 import java.io.IOException;
 import java.util.List;
@@ -38,9 +37,9 @@ public class SearchController {
 	@RequestMapping(method = RequestMethod.GET, params = {"content", "title", "author", "language", "genre"})
 	public String extendedSearch(
 			  ModelMap model
-			, @ModelAttribute("book") SearchBook searchBook
+			, @ModelAttribute("book") SearchedBook searchedBook
 	) throws IOException, ParseException {
-		List<Book> books = bookService.doExtendedSearch(searchBook);
+		List<Book> books = bookService.doExtendedSearch(searchedBook);
 		model.addAttribute("books", books);
 
 		return "search-tiles";

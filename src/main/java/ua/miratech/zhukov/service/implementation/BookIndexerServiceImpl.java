@@ -16,9 +16,9 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ua.miratech.zhukov.dto.IndexBook;
-import ua.miratech.zhukov.dto.SearchBook;
+import ua.miratech.zhukov.dto.controller.SearchedBook;
 import ua.miratech.zhukov.dto.output.Book;
 import ua.miratech.zhukov.service.BookIndexerService;
 import ua.miratech.zhukov.util.component.EbookStorage;
@@ -30,21 +30,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-@Component
+@Service
 public class BookIndexerServiceImpl implements BookIndexerService {
 
-	private static final String CONTENT = "content";
-	private static final String AUTHOR = "author";
-	private static final String TITLE = "title";
-	private static final String LANGUAGE = "language";
-	private static final String GENRE = "genre";
+	private static final String content = "content";
+	private static final String author = "author";
+	private static final String title = "title";
+	private static final String language = "language";
+	private static final String genre = "genre";
+
+	@Autowired
+	private EbookStorage ebookStorage;
 
 	@Autowired
 	@Qualifier("executorService")
 	private ExecutorService service;
-
-	@Autowired
-	private EbookStorage ebookStorage;
 
 	@Override
 	public void indexFile(byte[] fileContent, Book book) throws IOException {
@@ -76,32 +76,6 @@ public class BookIndexerServiceImpl implements BookIndexerService {
 		dir.close();
 	}
 
-	private void createIndex(IndexWriter writer, IndexBook book) throws IOException {
-		Document doc = new Document();
-		System.out.println(book.getFileName());
-		Field pathField = new StringField("fileName", book.getFileName(), Field.Store.YES);
-		doc.add(pathField);
-
-		doc.add(new TextField(CONTENT, new String(book.getContent()), Field.Store.YES));
-		doc.add(new TextField(TITLE, book.getTitle(), Field.Store.YES));
-		doc.add(new TextField(AUTHOR, book.getAuthor(), Field.Store.YES));
-		doc.add(new TextField(LANGUAGE, book.getLanguage(), Field.Store.YES));
-		for (String genre : book.getGenres()) {
-			doc.add(new TextField(GENRE, genre, Field.Store.YES));
-		}
-
-//		TODO rewrite
-		if (writer.getConfig().getOpenMode() == IndexWriterConfig.OpenMode.CREATE) {
-			// New index, so we just add the document (no old document can be there):
-			writer.addDocument(doc);
-		} else {
-			// Existing index (an old copy of this document may have been indexed) so
-			// we use updateDocument instead to replace the old one matching the exact
-			// path, if present:
-			writer.updateDocument(new Term("path", book.getFileName()), doc);
-		}
-	}
-
 	@Override
 	public synchronized void deleteIndex(String fileName) throws IOException {
 		Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_46);
@@ -122,38 +96,38 @@ public class BookIndexerServiceImpl implements BookIndexerService {
 			return null;
 		}
 
-		Query contentQuery = new QueryParser(Version.LUCENE_46, CONTENT, analyzer).parse(content);
+		Query contentQuery = new QueryParser(Version.LUCENE_46, BookIndexerServiceImpl.content, analyzer).parse(content);
 
 		return doSearch(contentQuery);
 	}
 
 	@Override
-	public List<Long> doExtendedSearch(SearchBook book) throws IOException, ParseException {
+	public List<Long> doExtendedSearch(SearchedBook book) throws IOException, ParseException {
 		Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_46);
 		BooleanQuery booleanQuery = new BooleanQuery();
 
 		if (!book.getContent().isEmpty()) {
-			Query contentQuery = new QueryParser(Version.LUCENE_46, CONTENT, analyzer).parse(book.getContent());
+			Query contentQuery = new QueryParser(Version.LUCENE_46, content, analyzer).parse(book.getContent());
 			booleanQuery.add(contentQuery, BooleanClause.Occur.MUST);
 		}
 
 		if (!book.getTitle().isEmpty()) {
-			Query titleQuery = new QueryParser(Version.LUCENE_46, TITLE, analyzer).parse(book.getTitle());
+			Query titleQuery = new QueryParser(Version.LUCENE_46, title, analyzer).parse(book.getTitle());
 			booleanQuery.add(titleQuery, BooleanClause.Occur.MUST);
 		}
 
 		if (!book.getAuthor().isEmpty()) {
-			Query authorQuery = new QueryParser(Version.LUCENE_46, AUTHOR, analyzer).parse(book.getAuthor());
+			Query authorQuery = new QueryParser(Version.LUCENE_46, author, analyzer).parse(book.getAuthor());
 			booleanQuery.add(authorQuery, BooleanClause.Occur.MUST);
 		}
 
 		if (!book.getLanguage().isEmpty()) {
-			Query languageQuery = new QueryParser(Version.LUCENE_46, LANGUAGE, analyzer).parse(book.getLanguage());
+			Query languageQuery = new QueryParser(Version.LUCENE_46, language, analyzer).parse(book.getLanguage());
 			booleanQuery.add(languageQuery, BooleanClause.Occur.MUST);
 		}
 
 		if (!book.getGenre().isEmpty()) {
-			Query genreQuery = new QueryParser(Version.LUCENE_46, GENRE, analyzer).parse(book.getGenre());
+			Query genreQuery = new QueryParser(Version.LUCENE_46, genre, analyzer).parse(book.getGenre());
 			booleanQuery.add(genreQuery, BooleanClause.Occur.MUST);
 		}
 
@@ -176,6 +150,31 @@ public class BookIndexerServiceImpl implements BookIndexerService {
 		reader.close();
 
 		return storedIndexes;
+	}
+
+	private void createIndex(IndexWriter writer, IndexBook book) throws IOException {
+		Document doc = new Document();
+		Field pathField = new StringField("fileName", book.getFileName(), Field.Store.YES);
+		doc.add(pathField);
+
+		doc.add(new TextField(content, new String(book.getContent()), Field.Store.YES));
+		doc.add(new TextField(title, book.getTitle(), Field.Store.YES));
+		doc.add(new TextField(author, book.getAuthor(), Field.Store.YES));
+		doc.add(new TextField(language, book.getLanguage(), Field.Store.YES));
+		for (String genre : book.getGenres()) {
+			doc.add(new TextField(BookIndexerServiceImpl.genre, genre, Field.Store.YES));
+		}
+
+//		TODO rewrite
+		if (writer.getConfig().getOpenMode() == IndexWriterConfig.OpenMode.CREATE) {
+			// New index, so we just add the document (no old document can be there):
+			writer.addDocument(doc);
+		} else {
+			// Existing index (an old copy of this document may have been indexed) so
+			// we use updateDocument instead to replace the old one matching the exact
+			// path, if present:
+			writer.updateDocument(new Term("path", book.getFileName()), doc);
+		}
 	}
 
 }

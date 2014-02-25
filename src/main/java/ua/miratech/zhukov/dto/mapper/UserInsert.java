@@ -1,15 +1,27 @@
-package ua.miratech.zhukov.dto;
+package ua.miratech.zhukov.dto.mapper;
+
+import ua.miratech.zhukov.dto.controller.CreatedUser;
 
 import java.util.Date;
 
-public class UserOut {
+public class UserInsert {
 
 	private Long id;
 	private String email;
 	private String firstName;
 	private String lastName;
+	private String password;
 	private Date registrationDate;
 	private String role;
+
+	public UserInsert(CreatedUser user, Date registrationDate, String role) {
+		this.email = user.getEmail();
+		this.firstName = user.getFirstName();
+		this.lastName = user.getLastName();
+		this.password = user.getPassword();
+		this.registrationDate = registrationDate;
+		this.role = role;
+	}
 
 	public Long getId() {
 		return id;
@@ -41,6 +53,14 @@ public class UserOut {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public Date getRegistrationDate() {

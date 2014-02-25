@@ -1,4 +1,4 @@
-package ua.miratech.zhukov.dto;
+package ua.miratech.zhukov.dto.output;
 
 import org.w3c.dom.NodeList;
 import ua.miratech.zhukov.dto.output.Book;

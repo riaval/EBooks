@@ -11,10 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ua.miratech.zhukov.dto.output.Book;
 import ua.miratech.zhukov.dto.output.DownloadBook;
 import ua.miratech.zhukov.mapper.BookMapper;
-import ua.miratech.zhukov.service.BookIndexerService;
-import ua.miratech.zhukov.service.BookService;
-import ua.miratech.zhukov.service.ConverterService;
-import ua.miratech.zhukov.service.FileService;
+import ua.miratech.zhukov.service.*;
 import ua.miratech.zhukov.util.thread.UnCompressCallable;
 import ua.miratech.zhukov.dto.UploadedFile;
 import ua.miratech.zhukov.util.component.EbookStorage;
@@ -31,22 +28,11 @@ import java.util.zip.ZipFile;
 @Service
 public class FileServiceImpl implements FileService {
 
-	@Autowired(required = false)
-	private BookMapper bookMapper;
-
 	@Autowired
-	private SecurityServiceImpl securityService;
+	private SecurityService securityService;
 
 	@Autowired
 	private BookService bookService;
-
-	@Autowired()
-	@Qualifier("executorService")
-	private ExecutorService service;
-
-	@Autowired
-	@Qualifier("bookIndexerServiceImpl")
-	private BookIndexerService bookIndexerService;
 
 	@Autowired
 	private EbookStorage ebookStorage;
@@ -54,7 +40,9 @@ public class FileServiceImpl implements FileService {
 	@Autowired
 	private ConverterService converterService;
 
-	private static final int MAX_FILE_SIZE = 0x1800000;
+	@Autowired()
+	@Qualifier("executorService")
+	private ExecutorService service;
 
 	public DownloadBook getDownloadBook(Book book) {
 		String filePath = ebookStorage.getMainCatalogue() + book.getStoredIndex() + "." + book.getExtension();
@@ -62,7 +50,6 @@ public class FileServiceImpl implements FileService {
 		return new DownloadBook(filePath, fileName);
 	}
 
-	//	TODO Transaction not working
 	@Override
 	public List<UploadedFile> uploadFile(Map<String, MultipartFile> filesMap) throws IOException {
 		List<UploadedFile> files = new ArrayList<>();
@@ -96,25 +83,6 @@ public class FileServiceImpl implements FileService {
 
 		return files;
 	}
-
-//	public UploadedFile uploadSimpleFile(UploadedFile uf, String userEmail) throws IOException {
-//		// Insert book to database
-//		Book book = insertBook(uf.getName(), uf.getSize(), uf.getBytes(), userEmail);
-//
-//		Long storedIndexes = bookMapper.countBookByStoredIndex(book.getStoredIndex());
-//		if (storedIndexes == 1) {
-//			// Save file to the Hard Drive
-//			saveFile(uf.getBytes(), book);
-//
-//			// Index file
-//			indexFile(uf.getBytes(), book);
-//		}
-//
-//		uf.setType("text");
-//		uf.setDeleteUrl("/Ebooks/book/delete/" + book.getId());
-//
-//		return uf;
-//	}
 
 	public void uploadZipFile(UploadedFile uf, String userEmail) throws IOException {
 		Long systemTime = Calendar.getInstance().getTime().getTime();
@@ -154,8 +122,6 @@ public class FileServiceImpl implements FileService {
 		}
 	}
 
-
-
 	public boolean saveFile(byte[] fileContent, Book book) throws IOException {
 		String filePath = ebookStorage.getMainCatalogue() + book.getStoredIndex() + "." + book.getExtension();
 		File file = new File(filePath);
@@ -167,7 +133,6 @@ public class FileServiceImpl implements FileService {
 	}
 
 	private void extractZip(String zipFile) throws IOException {
-		System.out.println(zipFile);
 		int BUFFER = 2048;
 		File file = new File(zipFile);
 

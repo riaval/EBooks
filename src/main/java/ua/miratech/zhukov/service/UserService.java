@@ -1,6 +1,6 @@
 package ua.miratech.zhukov.service;
 
-import ua.miratech.zhukov.dto.UserOut;
+import ua.miratech.zhukov.dto.output.UserOut;
 import ua.miratech.zhukov.dto.controller.CreatedUser;
 import ua.miratech.zhukov.dto.controller.EditedUser;
 

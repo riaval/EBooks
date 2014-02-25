@@ -5,11 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
-import ua.miratech.zhukov.dto.UserOut;
+import ua.miratech.zhukov.dto.output.UserOut;
 import ua.miratech.zhukov.dto.controller.EditedUser;
-import ua.miratech.zhukov.mapper.UserMapper;
 import ua.miratech.zhukov.service.UserService;
-import ua.miratech.zhukov.service.implementation.UserServiceImpl;
 
 import javax.validation.Valid;
 import java.util.List;

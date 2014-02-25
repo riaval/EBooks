@@ -1,8 +1,8 @@
 package ua.miratech.zhukov.mapper;
 
 import org.apache.ibatis.annotations.Param;
-import ua.miratech.zhukov.dto.UserInsert;
-import ua.miratech.zhukov.dto.UserOut;
+import ua.miratech.zhukov.dto.mapper.UserInsert;
+import ua.miratech.zhukov.dto.output.UserOut;
 
 import java.util.List;
 

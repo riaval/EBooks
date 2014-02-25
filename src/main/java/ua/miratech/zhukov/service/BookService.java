@@ -1,8 +1,8 @@
 package ua.miratech.zhukov.service;
 
-import ua.miratech.zhukov.dto.ReadingBook;
-import ua.miratech.zhukov.dto.SearchBook;
-import ua.miratech.zhukov.dto.SharedType;
+import ua.miratech.zhukov.dto.controller.SearchedBook;
+import ua.miratech.zhukov.dto.output.ReadingBook;
+import ua.miratech.zhukov.dto.enums.SharedType;
 import ua.miratech.zhukov.dto.UploadedFile;
 import ua.miratech.zhukov.dto.controller.EditedBook;
 import ua.miratech.zhukov.dto.output.Book;
@@ -37,5 +37,5 @@ public interface BookService {
 
 	List<Book> doSimpleSearch(String content);
 
-	List<Book> doExtendedSearch(SearchBook searchBook);
+	List<Book> doExtendedSearch(SearchedBook searchedBook);
 }

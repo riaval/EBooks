@@ -3,11 +3,12 @@ package ua.miratech.zhukov.service.implementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
-import ua.miratech.zhukov.dto.UserOut;
+import ua.miratech.zhukov.dto.output.UserOut;
 import ua.miratech.zhukov.dto.controller.EditedUser;
 import ua.miratech.zhukov.mapper.UserMapper;
 import ua.miratech.zhukov.dto.controller.CreatedUser;
-import ua.miratech.zhukov.dto.UserInsert;
+import ua.miratech.zhukov.dto.mapper.UserInsert;
+import ua.miratech.zhukov.service.SecurityService;
 import ua.miratech.zhukov.service.UserService;
 
 import java.util.Calendar;
@@ -23,7 +24,7 @@ public class UserServiceImpl implements UserService {
 	private UserMapper userMapper;
 
 	@Autowired
-	private SecurityServiceImpl securityService;
+	private SecurityService securityService;
 
 	@Override
 	public Long createUser(CreatedUser createdUser) {

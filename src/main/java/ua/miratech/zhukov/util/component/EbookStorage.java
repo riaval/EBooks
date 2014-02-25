@@ -24,31 +24,18 @@ public class EbookStorage {
 		mainCatalogue = basePath + MAIN_CATALOGUE;
 		indexCatalogue = basePath + INDEX_CATALOGUE;
 		tempCatalogue = basePath + TEMP_FILES;
-
-		System.out.println(mainCatalogue);
 	}
 
 	public String getMainCatalogue() {
 		return mainCatalogue;
 	}
 
-	public void setMainCatalogue(String mainCatalogue) {
-		this.mainCatalogue = mainCatalogue;
-	}
-
 	public String getIndexCatalogue() {
 		return indexCatalogue;
-	}
-
-	public void setIndexCatalogue(String indexCatalogue) {
-		this.indexCatalogue = indexCatalogue;
 	}
 
 	public String getTempCatalogue() {
 		return tempCatalogue;
 	}
 
-	public void setTempCatalogue(String tempCatalogue) {
-		this.tempCatalogue = tempCatalogue;
-	}
 }

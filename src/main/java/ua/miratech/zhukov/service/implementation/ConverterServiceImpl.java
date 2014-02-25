@@ -2,6 +2,7 @@ package ua.miratech.zhukov.service.implementation;
 
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -19,6 +20,10 @@ import java.io.StringReader;
 @Service
 public class ConverterServiceImpl implements ConverterService {
 
+	private static final Logger logger = Logger.getLogger(ConverterServiceImpl.class);
+	private static final String uploadUrl = "http://api.online-convert.com/queue-insert";
+	private static final String checkStatusUrl = "http://api.online-convert.com/queue-status";
+
 	@Override
 	public UploadedFile convertToFb2(UploadedFile uploadedFile) {
 		byte[] newData = convertFile(uploadedFile.getBytes(), uploadedFile.getName());
@@ -33,11 +38,8 @@ public class ConverterServiceImpl implements ConverterService {
 		XPathFactory xpathFactory = XPathFactory.newInstance();
 		XPath xpath = xpathFactory.newXPath();
 
-//		String uploadUrl = "http://localhost:8080/Ebooks/books/bb/";
-		String uploadUrl = "http://api.online-convert.com/queue-insert";
-//		String uploadUrl = "http://api.online-convert.com/get-queue";
 		UploadRequest uploadRequest = new UploadRequest();
-		uploadRequest.getFile().setFileName("A_Tangeled_Web-Alan_Maley.mobi");
+		uploadRequest.getFile().setFileName(fileName);
 		uploadRequest.getFile().setFileData(Base64.encode(fileData));
 
 		MultiValueMap<String, UploadRequest> uploadMap = new LinkedMultiValueMap<>();
@@ -52,10 +54,8 @@ public class ConverterServiceImpl implements ConverterService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println(hash);
 
 //		Second part
-
 		String downloadLink = null;
 		while (downloadLink == null) {
 			try {
@@ -64,7 +64,6 @@ public class ConverterServiceImpl implements ConverterService {
 				e.printStackTrace();
 			}
 
-			String checkStatusUrl = "http://api.online-convert.com/queue-status";
 			CheckStatusRequest checkStatusRequest = new CheckStatusRequest();
 			checkStatusRequest.setHash(hash);
 			MultiValueMap<String, CheckStatusRequest> checkMap = new LinkedMultiValueMap<>();
@@ -76,7 +75,7 @@ public class ConverterServiceImpl implements ConverterService {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			System.out.println(downloadLink);
+			logger.info("Converted file [" + fileName + "] address: [" + downloadLink + "]");
 		}
 
 //		Third part

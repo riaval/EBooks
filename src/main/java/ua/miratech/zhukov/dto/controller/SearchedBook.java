@@ -1,6 +1,6 @@
-package ua.miratech.zhukov.dto;
+package ua.miratech.zhukov.dto.controller;
 
-public class SearchBook {
+public class SearchedBook {
 
 	String content;
 	String title;
@@ -8,9 +8,9 @@ public class SearchBook {
 	String genre;
 	String language;
 
-	public SearchBook() {}
+	public SearchedBook() {}
 
-	public SearchBook(String content, String title, String author, String language, String genre) {
+	public SearchedBook(String content, String title, String author, String language, String genre) {
 		this.content = content;
 		this.title = title;
 		this.author = author;

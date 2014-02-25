@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.NodeList;
-import ua.miratech.zhukov.dto.ReadingBook;
-import ua.miratech.zhukov.dto.SearchBook;
-import ua.miratech.zhukov.dto.SharedType;
+import ua.miratech.zhukov.dto.controller.SearchedBook;
+import ua.miratech.zhukov.dto.output.ReadingBook;
+import ua.miratech.zhukov.dto.enums.SharedType;
 import ua.miratech.zhukov.dto.UploadedFile;
 import ua.miratech.zhukov.dto.controller.EditedBook;
 import ua.miratech.zhukov.dto.mapper.ShareInParam;
@@ -19,6 +19,8 @@ import ua.miratech.zhukov.dto.output.DownloadBook;
 import ua.miratech.zhukov.mapper.BookMapper;
 import ua.miratech.zhukov.service.BookIndexerService;
 import ua.miratech.zhukov.service.BookService;
+import ua.miratech.zhukov.service.FileService;
+import ua.miratech.zhukov.service.SecurityService;
 import ua.miratech.zhukov.util.FictionBookParser;
 import ua.miratech.zhukov.util.component.EbookStorage;
 
@@ -33,25 +35,24 @@ import java.util.List;
 @Service
 public class BookServiceImpl implements BookService {
 
+	private static final String defaultSharedType = "PRIVATE";
 	private static final Logger logger = Logger.getLogger(BookServiceImpl.class);
 
 	@Autowired(required = false)
 	private BookMapper bookMapper;
 
 	@Autowired
-	private FileServiceImpl fileService;
+	private EbookStorage ebookStorage;
 
 	@Autowired
-	private SecurityServiceImpl securityService;
+	private FileService fileService;
+
+	@Autowired
+	private SecurityService securityService;
 
 	@Autowired
 	@Qualifier("bookIndexerServiceImpl")
 	private BookIndexerService bookIndexerService;
-
-	@Autowired
-	private EbookStorage ebookStorage;
-
-	private static final String DEFAULT_SHARED_TYPE = "PRIVATE";
 
 	@Override
 	public Long addBook(UploadedFile uf, String userEmail) throws IOException {
@@ -239,10 +240,10 @@ public class BookServiceImpl implements BookService {
 	}
 
 	@Override
-	public List<Book> doExtendedSearch(SearchBook searchBook) {
+	public List<Book> doExtendedSearch(SearchedBook searchedBook) {
 		List<Long> storedIndexes = null;
 		try {
-			storedIndexes = bookIndexerService.doExtendedSearch(searchBook);
+			storedIndexes = bookIndexerService.doExtendedSearch(searchedBook);
 		} catch (IOException | ParseException e) {
 			logger.error(e);
 			throw new RuntimeException(e.getMessage());
@@ -272,7 +273,7 @@ public class BookServiceImpl implements BookService {
 				FilenameUtils.getExtension(fileName),
 				fbp.getAnnotation(),
 				fbp.getISBN(),
-				DEFAULT_SHARED_TYPE,
+				defaultSharedType,
 				fbp.getGenres()
 		);
 		bookMapper.add(book);
