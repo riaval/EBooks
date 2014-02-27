@@ -1,11 +1,13 @@
 package ua.miratech.zhukov.util.component;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
 @Component
+@Scope()
 public class EbookStorage {
 
 	private final static String MAIN_CATALOGUE = "MAIN_CATALOGUE/";

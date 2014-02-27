@@ -7,6 +7,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import ua.miratech.zhukov.dto.controller.SearchedBook;
 import ua.miratech.zhukov.dto.output.Book;
+import ua.miratech.zhukov.dto.output.BookExt;
 import ua.miratech.zhukov.service.BookService;
 
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class SearchController {
 			  ModelMap model
 			, @RequestParam(value = "content") String content
 	) throws IOException, ParseException {
-		List<Book> books = bookService.doSimpleSearch(content);
+		List<BookExt> books = bookService.doSimpleSearch(content);
 		model.addAttribute("books", books);
 		return "search-tiles";
 	}
@@ -37,9 +38,9 @@ public class SearchController {
 	@RequestMapping(method = RequestMethod.GET, params = {"content", "title", "author", "language", "genre"})
 	public String extendedSearch(
 			  ModelMap model
-			, @ModelAttribute("book") SearchedBook searchedBook
+			, @ModelAttribute SearchedBook searchedBook
 	) throws IOException, ParseException {
-		List<Book> books = bookService.doExtendedSearch(searchedBook);
+		List<BookExt> books = bookService.doExtendedSearch(searchedBook);
 		model.addAttribute("books", books);
 
 		return "search-tiles";

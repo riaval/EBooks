@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Param;
 import ua.miratech.zhukov.dto.controller.EditedBook;
 import ua.miratech.zhukov.dto.output.Book;
 import ua.miratech.zhukov.dto.mapper.ShareInParam;
+import ua.miratech.zhukov.dto.output.BookExt;
 
 import java.util.List;
 
@@ -25,12 +26,13 @@ public interface BookMapper {
 	);
 
 	public Book getBookForUserById(
-			@Param("userEmail") String userEmail
+			  @Param("userEmail") String userEmail
 			, @Param("bookId") Long bookId
 	);
 
-	public List<Book> getBooksByStoredIndex(
-			  @Param("storedIndex") Long storedIndex
+	public List<BookExt> getBooksByStoredIndex(
+			  @Param("userEmail")String userEmail
+			, @Param("storedIndexes") List<Long> storedIndexes
 	);
 
 	public Long countBookByStoredIndex(

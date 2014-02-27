@@ -16,6 +16,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Прямая связь с readBook.jsp
+ * Контроллер для управления книгой на странице чтения
+ */
 @Controller
 public class BookController {
 

@@ -147,3 +147,11 @@ code {
 	float: right;
 	margin-top: 20px;
 }
+
+.allowed {
+	background-color: #F5FFF5;
+}
+
+.not-allowed {
+	background-color: #FFF5F5;
+}

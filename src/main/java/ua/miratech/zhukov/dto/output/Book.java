@@ -11,7 +11,6 @@ public class Book {
 	private Date publicationDate;
 	private String fileName;
 	private Long size;
-//	private String path;
 	private String sha1;
 	private String owner;
 	private String language;
@@ -32,7 +31,6 @@ public class Book {
 		this.publicationDate = publicationDate;
 		this.fileName = fileName;
 		this.size = size;
-//		this.path = path;
 		this.sha1 = sha1;
 		this.owner = owner;
 		this.language = language;
@@ -90,14 +88,6 @@ public class Book {
 	public void setSize(Long size) {
 		this.size = size;
 	}
-
-//	public String getPath() {
-//		return path;
-//	}
-//
-//	public void setPath(String path) {
-//		this.path = path;
-//	}
 
 	public String getSha1() {
 		return sha1;

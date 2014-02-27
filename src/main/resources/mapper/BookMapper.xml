@@ -20,6 +20,10 @@
         <collection column="GENRE_NAME" property="genres" javaType="ArrayList" ofType="String"/>
     </resultMap>
 
+    <resultMap id="bookExtMap" type="ua.miratech.zhukov.dto.output.BookExt" extends="bookMap">
+        <result column="SHARED" property="shared" />
+    </resultMap>
+
     <select id="getLastBooks" resultMap="bookMap">
         SELECT * FROM
         (
@@ -203,8 +207,9 @@
         ORDER BY BOOKS.PUB_DATE DESC
     </select>
     
-    <select id="getBooksByStoredIndex" resultMap="bookMap">
+    <select id="getBooksByStoredIndex" resultMap="bookExtMap" parameterType="java.util.List">
         SELECT
+          GENRE_NAME,
           BOOK_ID,
           AUTHOR,
           TITLE,
@@ -218,7 +223,8 @@
           ANNOTATION,
           ISBN,
           SHARED_TYPE_NAME,
-          STORED_INDEX
+          STORED_INDEX,
+          (SELECT DISTINCT(CASE EMAIL when #{userEmail} THEN 1 END) FROM USERS WHERE USER_ID = ID_GRANTEE AND EMAIL = #{userEmail}) SHARED
         FROM
           BOOKS
         INNER JOIN
@@ -231,10 +237,22 @@
           BOOK_TYPES
             ON BOOKS.ID_BOOK_TYPE = BOOK_TYPES.BOOK_TYPE_ID
         INNER JOIN
+          BOOKS_GENRES
+            ON BOOKS.BOOK_ID = BOOKS_GENRES.BOOK_ID
+        INNER JOIN
+          GENRES
+            ON BOOKS_GENRES.GENRE_ID = GENRES.GENRE_ID
+        INNER JOIN
           SHARED_TYPES
             ON BOOKS.ID_SHARED_TYPE = SHARED_TYPES.SHARED_TYPE_ID
+        LEFT JOIN
+          SHARED
+            ON BOOKS.BOOK_ID = SHARED.ID_BOOK
         WHERE
-          STORED_INDEX = #{storedIndex,javaType=Long,jdbcType=NUMERIC}
+          STORED_INDEX IN
+          <foreach collection="storedIndexes" item="storedIndex" index="index" open="(" separator="," close=")">
+            #{storedIndex}
+          </foreach>
     </select>
 
     <select id="countBookByStoredIndex" resultType="java.lang.Long">

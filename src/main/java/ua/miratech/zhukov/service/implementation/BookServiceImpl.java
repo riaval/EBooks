@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.NodeList;
 import ua.miratech.zhukov.dto.controller.SearchedBook;
+import ua.miratech.zhukov.dto.output.BookExt;
 import ua.miratech.zhukov.dto.output.ReadingBook;
 import ua.miratech.zhukov.dto.enums.SharedType;
 import ua.miratech.zhukov.dto.UploadedFile;
@@ -27,7 +28,6 @@ import ua.miratech.zhukov.util.component.EbookStorage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -188,12 +188,18 @@ public class BookServiceImpl implements BookService {
 		ShareInParam shareInParam = new ShareInParam(bookId, ownerEmail, granteeEmail);
 		bookMapper.share(shareInParam);
 		switch (shareInParam.getResultStatus()) {
-			case 0: throw new IllegalArgumentException("Already shared");
-			case -1: throw new IllegalArgumentException("User owner not found");
-			case -2: throw new IllegalArgumentException("User grantee not found");
-			case -3: throw new IllegalArgumentException("Book not found");
-			case -4: throw new IllegalArgumentException("Owner and grantee is the same user");
-			case -5: throw new SecurityException("User does not have required permissions");
+			case 0:
+				throw new IllegalArgumentException("Already shared");
+			case -1:
+				throw new IllegalArgumentException("User owner not found");
+			case -2:
+				throw new IllegalArgumentException("User grantee not found");
+			case -3:
+				throw new IllegalArgumentException("Book not found");
+			case -4:
+				throw new IllegalArgumentException("Owner and grantee is the same user");
+			case -5:
+				throw new SecurityException("User does not have required permissions");
 		}
 	}
 
@@ -228,7 +234,7 @@ public class BookServiceImpl implements BookService {
 	}
 
 	@Override
-	public List<Book> doSimpleSearch(String content) {
+	public List<BookExt> doSimpleSearch(String content) {
 		List<Long> storedIndexes;
 		try {
 			storedIndexes = bookIndexerService.doSimpleSearch(content);
@@ -240,7 +246,7 @@ public class BookServiceImpl implements BookService {
 	}
 
 	@Override
-	public List<Book> doExtendedSearch(SearchedBook searchedBook) {
+	public List<BookExt> doExtendedSearch(SearchedBook searchedBook) {
 		List<Long> storedIndexes = null;
 		try {
 			storedIndexes = bookIndexerService.doExtendedSearch(searchedBook);
@@ -251,12 +257,12 @@ public class BookServiceImpl implements BookService {
 		return getBooksFromStoredIndexes(storedIndexes);
 	}
 
-	private List<Book> getBooksFromStoredIndexes(List<Long> storedIndexes) {
-		List<Book> books = new ArrayList<>();
-		for (Long each : storedIndexes) {
-			books.addAll(bookMapper.getBooksByStoredIndex(each));
+	private List<BookExt> getBooksFromStoredIndexes(List<Long> storedIndexes) {
+		String userEmail = securityService.getUserEmail();
+		if (storedIndexes.size() == 0) {
+			return null;
 		}
-		return books;
+		return bookMapper.getBooksByStoredIndex(userEmail, storedIndexes);
 	}
 
 	private Book insertBook(String fileName, Long fileSize, byte[] fileContent, String userEmail) {

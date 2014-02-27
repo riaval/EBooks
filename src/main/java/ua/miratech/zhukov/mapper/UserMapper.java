@@ -10,7 +10,9 @@ public interface UserMapper {
 
 	public void createNewUser(UserInsert user);
 
-	public UserOut getUserByEmail(@Param("email") String email);
+	public UserOut getUserByEmail(
+			  @Param("email") String email
+	);
 
 	public List<UserOut> getUserWithSharedBooks(
 			  @Param("userEmail") String userEmail

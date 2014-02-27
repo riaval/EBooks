@@ -2,7 +2,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<sec:authorize access="isAuthenticated()">
+	<sec:authentication var="user" property="principal.username" />
+</sec:authorize>
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
 <script type="text/javascript">
@@ -67,7 +70,9 @@
 
 <c:forEach var="book" items="${books}">
 	<c:set var="book" value="${book}" scope="request" />
-	<jsp:include page="../templates/book-include.jsp" />
+	<div class="${(user eq book.owner || book.sharedType eq 'PUBLIC' || book.shared) ? 'allowed' : 'not-allowed'}">
+		<jsp:include page="../templates/book-include.jsp" />
+	</div>
 </c:forEach>
 
 <jsp:include page="../templates/users-modal-include.jsp" />
