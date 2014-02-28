@@ -16,22 +16,22 @@ public class UserMapperMock implements UserMapper {
 	}
 
 	@Override
-	public UserOut getUserByEmail(@Param("email") String email) {
+	public UserOut getUserByEmail(String email) {
 		return null;
 	}
 
 	@Override
-	public List<UserOut> getUserWithSharedBooks(@Param("userEmail") String userEmail, @Param("bookId") Long bookId) {
+	public List<UserOut> getUserWithSharedBooks(String userEmail, Long bookId) {
 		return null;
 	}
 
 	@Override
-	public int updateName(@Param("userEmail") String userEmail, @Param("firstName") String firstName, @Param("lastName") String lastName) {
+	public int updateName(String userEmail, String firstName, String lastName) {
 		return 0;
 	}
 
 	@Override
-	public int updateFull(@Param("userEmail") String userEmail, @Param("firstName") String firstName, @Param("lastName") String lastName, @Param("password") String password) {
+	public int updateFull(String userEmail, String firstName, String lastName, String password) {
 		return 0;
 	}
 }

@@ -1,5 +1,6 @@
 package ua.miratech.zhukov.util.component;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -7,8 +8,9 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 
 @Component
-@Scope()
 public class EbookStorage {
+
+	private static final Logger logger = Logger.getLogger(EbookStorage.class);
 
 	private final static String MAIN_CATALOGUE = "MAIN_CATALOGUE/";
 	private final static String INDEX_CATALOGUE = "INDEX_CATALOGUE/";
@@ -26,6 +28,10 @@ public class EbookStorage {
 		mainCatalogue = basePath + MAIN_CATALOGUE;
 		indexCatalogue = basePath + INDEX_CATALOGUE;
 		tempCatalogue = basePath + TEMP_FILES;
+
+		logger.info("Main catalogue initialized in [" + mainCatalogue + "]");
+		logger.info("Index catalogue initialized in [" + indexCatalogue + "]");
+		logger.info("Temp catalogue initialized in [" + tempCatalogue + "]");
 	}
 
 	public String getMainCatalogue() {

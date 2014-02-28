@@ -15,7 +15,7 @@
         <property name="preparerFactoryClass" value="org.springframework.web.servlet.view.tiles2.SpringBeanPreparerFactory"/>
     </bean>
 
-    <context:component-scan base-package="ua.miratech.zhukov"/>
+    <context:component-scan base-package="ua.miratech.zhukov.controller"/>
 
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/pages/"/>

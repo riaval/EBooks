@@ -284,7 +284,7 @@ public class BookServiceImpl implements BookService {
 		);
 		bookMapper.add(book);
 		Book insertedBook = bookMapper.getBookById(book.getId());
-
+		System.out.println(insertedBook);
 		for (String each : fbp.getGenres()) {
 			bookMapper.addGenre(insertedBook.getId(), each);
 		}

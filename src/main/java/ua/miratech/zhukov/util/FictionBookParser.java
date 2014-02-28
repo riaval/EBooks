@@ -1,5 +1,6 @@
 package ua.miratech.zhukov.util;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -18,6 +19,8 @@ import java.util.List;
 
 public class FictionBookParser {
 
+	private static final Logger logger = Logger.getLogger(FictionBookParser.class);
+
 	private String xmlValue;
 	private XPath xpath;
 
@@ -25,8 +28,7 @@ public class FictionBookParser {
 		try {
 			xmlValue = new String(bytes, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 		}
 		XPathFactory xpathFactory = XPathFactory.newInstance();
 		xpath = xpathFactory.newXPath();
@@ -37,9 +39,9 @@ public class FictionBookParser {
 		InputSource source = new InputSource(new StringReader(xmlValue));
 		String title = null;
 		try {
-			title = xpath.evaluate("/df:FictionBook/df:description/df:title-info/df:book-title", source);
+			title = xpath.evaluate("/df:FictionBook/df:description/df:title-info/df:book-title", source).trim();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e);
 		}
 
 		return title;
@@ -51,10 +53,12 @@ public class FictionBookParser {
 		String firstName = null;
 		String lastName = null;
 		try {
-			firstName = xpath.evaluate("/df:FictionBook/df:description/df:title-info/df:author/df:first-name", source1);
-			lastName = xpath.evaluate("/df:FictionBook/df:description/df:title-info/df:author/df:last-name", source2);
+			firstName = xpath.evaluate("/df:FictionBook/df:description/df:title-info/df:author/df:first-name", source1)
+					.trim();
+			lastName = xpath.evaluate("/df:FictionBook/df:description/df:title-info/df:author/df:last-name", source2)
+					.trim();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e);
 		}
 		return firstName + " " + lastName;
 	}
@@ -63,9 +67,9 @@ public class FictionBookParser {
 		InputSource source = new InputSource(new StringReader(xmlValue));
 		String lang = null;
 		try {
-			lang = xpath.evaluate("/df:FictionBook/df:description/df:title-info/df:lang", source);
+			lang = xpath.evaluate("/df:FictionBook/df:description/df:title-info/df:lang", source).trim();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e);
 		}
 		return lang;
 	}
@@ -74,9 +78,9 @@ public class FictionBookParser {
 		InputSource source = new InputSource(new StringReader(xmlValue));
 		String lang = null;
 		try {
-			lang = xpath.evaluate("/df:FictionBook/df:description/df:publish-info/df:isbn", source);
+			lang = xpath.evaluate("/df:FictionBook/df:description/df:publish-info/df:isbn", source).trim();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e);
 		}
 		return lang;
 	}
@@ -85,9 +89,9 @@ public class FictionBookParser {
 		InputSource source = new InputSource(new StringReader(xmlValue));
 		String annotation = null;
 		try {
-			annotation = xpath.evaluate("/df:FictionBook/df:description/df:title-info/df:annotation", source);
+			annotation = xpath.evaluate("/df:FictionBook/df:description/df:title-info/df:annotation", source).trim();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e);
 		}
 		return annotation;
 	}
@@ -102,7 +106,7 @@ public class FictionBookParser {
 				genres.add(nl.item(i).getTextContent());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e);
 		}
 		return genres;
 	}
@@ -115,7 +119,7 @@ public class FictionBookParser {
 			Document document = db.parse(source);
 			return document.getElementsByTagName("section");
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e);
 		}
 		return null;
 	}

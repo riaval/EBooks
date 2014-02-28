@@ -1,5 +1,6 @@
 package ua.miratech.zhukov.service;
 
+import org.springframework.stereotype.Service;
 import ua.miratech.zhukov.dto.output.UserOut;
 import ua.miratech.zhukov.dto.controller.CreatedUser;
 import ua.miratech.zhukov.dto.controller.EditedUser;
