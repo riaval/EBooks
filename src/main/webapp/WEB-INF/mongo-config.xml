@@ -1,0 +1,38 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo.xsd">
+
+    <context:component-scan base-package="ua.miratech.zhukov.repository" />
+    <mongo:repositories base-package="ua.miratech.zhukov.repository" />
+
+    <!-- Factory bean that creates the Mongo instance -->
+    <bean id="mongo" class="org.springframework.data.mongodb.core.MongoFactoryBean">
+        <property name="host" value="localhost" />
+    </bean>
+
+    <!-- MongoTemplate for connecting and quering the documents in the database -->
+    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+        <constructor-arg index="0" ref="mongo" />
+        <constructor-arg index="1" value="test" />
+    </bean>
+
+    <!-- Use this post processor to translate any MongoExceptions thrown in @Repository annotated classes -->
+    <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+    <!--&lt;!&ndash; Mongo config &ndash;&gt;-->
+    <!--<mongo:db-factory id="mongoDbFactory"-->
+                      <!--host="localhost"-->
+                      <!--port="27017"-->
+                      <!--dbname="test" />-->
+
+    <!--<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">-->
+        <!--<constructor-arg ref="mongoDbFactory" />-->
+    <!--</bean>-->
+
+    <!--<context:component-scan base-package="ua.miratech.zhukov.repository"/>-->
+    <!--<mongo:repositories base-package="ua.miratech.zhukov.repository" />-->
+
+</beans>

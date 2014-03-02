@@ -204,6 +204,20 @@
             <version>1.4</version>
         </dependency>
 
+        <!-- MongoDB -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-mongodb</artifactId>
+            <version>1.4.0.RELEASE</version>
+        </dependency>
+
+        <!-- MongoDB java driver -->
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>2.11.4</version>
+        </dependency>
+
         <!-- Apache tiles -->
         <dependency>
             <groupId>org.apache.tiles</groupId>

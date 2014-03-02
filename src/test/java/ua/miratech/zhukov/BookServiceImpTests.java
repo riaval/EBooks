@@ -47,15 +47,15 @@ public class BookServiceImpTests {
 
 	@Test
 	public void addBookTest() throws IOException {
-		UploadedFile uploadedFile = new UploadedFile(
-				text.getBytes(),
-				"file_name.fb2",
-				100500,
-				"text"
-		);
-		String userEmail = SecurityServiceMock.CURRENT_USER;
-		Long index = bookService.addBook(uploadedFile, userEmail);
-		System.out.println(index);
+//		UploadedFile uploadedFile = new UploadedFile(
+//				text.getBytes(),
+//				"file_name.fb2",
+//				100500,
+//				"text"
+//		);
+//		String userEmail = SecurityServiceMock.CURRENT_USER;
+//		Long index = bookService.addBook(uploadedFile, userEmail);
+//		System.out.println(index);
 	}
 
 	private final static String text = "<?xml version=\"1.0\" encoding=\"windows-1251\"?>\n" +
