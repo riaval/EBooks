@@ -97,7 +97,7 @@ public class BookController {
 	 */
 	@RequestMapping(value = "/book/{bookId}", method = RequestMethod.POST, params = {"type"})
 	@ResponseStatus(value = HttpStatus.OK)
-	public void setType(@PathVariable String bookId, @RequestParam(value = "type") String type) {
+	public void setSharedType(@PathVariable String bookId, @RequestParam(value = "type") String type) {
 		SharedType sharedType = null;
 		switch (type) {
 			case "public":
@@ -129,10 +129,10 @@ public class BookController {
 	 * @param bookId ID книги
 	 * @param userEmail Email пользователя, которому был предоставлен доступ
 	 */
-	@RequestMapping(value = "/books/{bookId}/users/{userId}/delete", method = RequestMethod.POST)
+	@RequestMapping(value = "/books/{bookId}/users/{granteeId}/delete", method = RequestMethod.POST)
 	@ResponseStatus(value = HttpStatus.OK)
-	public void unShareBook(@PathVariable String bookId, @PathVariable String userEmail) {
-		bookService.unShareBook(bookId, userEmail);
+	public void unShareBook(@PathVariable String bookId, @PathVariable String granteeId) {
+		bookService.unShareBook(bookId, granteeId);
 	}
 
 }

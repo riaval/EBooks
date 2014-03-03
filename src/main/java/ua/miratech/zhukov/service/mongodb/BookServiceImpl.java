@@ -7,6 +7,8 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.NodeList;
 import ua.miratech.zhukov.domain.Book;
@@ -26,10 +28,7 @@ import ua.miratech.zhukov.util.component.EbookStorage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -60,11 +59,12 @@ public class BookServiceImpl implements BookService {
 	public String addBook(UploadedFile uf, User user) throws IOException {
 		String md5 = Integer.toString(Arrays.hashCode(uf.getBytes()));
 
-		boolean FileAlreadyStored = true;
-		String storedIndex = bookRepository.findStoredIndexByMD5(md5);
-		if (storedIndex == null) {
-			FileAlreadyStored = false;
+		Book storedBook = bookRepository.findByMD5(md5);
+		String storedIndex;
+		if (storedBook == null) {
 			storedIndex = UUID.randomUUID().toString();
+		} else {
+			storedIndex = storedBook.getStoredIndex();
 		}
 
 		// Insert book to database
@@ -84,11 +84,11 @@ public class BookServiceImpl implements BookService {
 				defaultSharedType,
 				storedIndex,
 				Calendar.getInstance().getTime(),
-				null
+				new ArrayList<User>()
 		);
 		bookRepository.save(book);
 
-		if (!FileAlreadyStored) {
+		if (storedBook == null) {
 			// Save file to the Hard Drive
 			fileService.saveFile(uf.getBytes(), book);
 
@@ -129,7 +129,7 @@ public class BookServiceImpl implements BookService {
 
 	@Override
 	public Book getBookForEditing(String bookId) {
-		return checkWritePermissions(bookId);
+		return checkReadPermissions(bookId);
 	}
 
 	@Override
@@ -143,7 +143,7 @@ public class BookServiceImpl implements BookService {
 	public List<Book> getLastBooks() {
 		User user = userService.getCurrentUser();
 
-		return bookRepository.findLastBooks( new ObjectId(user.getId()) );
+		return bookRepository.findLastBooks();
 	}
 
 	@Override
@@ -179,6 +179,8 @@ public class BookServiceImpl implements BookService {
 		Book book = checkWritePermissions(bookId);
 
 		book.setSharedType(sharedType.toString());
+
+		bookRepository.save(book);
 	}
 
 	@Override
@@ -211,12 +213,12 @@ public class BookServiceImpl implements BookService {
 	}
 
 	@Override
-	public void unShareBook(String bookId, String granteeEmail) {
+	public void unShareBook(String bookId, String granteeId) {
 		Book book = checkWritePermissions(bookId);
-		User granteeUser = userRepository.findByEmail(granteeEmail);
+		User granteeUser = userRepository.findOne(granteeId);
 
 		if (granteeUser == null) {
-			throw new IllegalArgumentException("Invited user [email:" + granteeEmail + "] not found");
+			throw new IllegalArgumentException("Invited user [id:" + granteeId + "] not found");
 		}
 
 		List<User> users = book.getSharedFor();
@@ -246,6 +248,7 @@ public class BookServiceImpl implements BookService {
 	}
 
 	@Override
+	@Secured({"ROLE_USER"})
 	public List<Book> doExtendedSearch(SearchedBook searchedBook) {
 		List<String> storedIndexes = null;
 		try {
@@ -262,8 +265,9 @@ public class BookServiceImpl implements BookService {
 		if (storedIndexes.size() == 0) {
 			return null;
 		}
+		User user = userService.getCurrentUser();
 
-		return bookRepository.findBooksByOwner(storedIndexes);
+		return bookRepository.findBooksWithStoredIndexes(new ObjectId(user.getId()), storedIndexes);
 	}
 
 	private Book checkWritePermissions(String bookId) {
@@ -283,7 +287,11 @@ public class BookServiceImpl implements BookService {
 		Book book = findBook(bookId);
 
 		User user = userService.getCurrentUser();
-		if (!book.getSharedFor().contains(user)) {
+
+		boolean isPublic = book.getSharedType().equals("PUBLIC");
+		boolean isOwner = book.getOwner().equals(user);
+		boolean isBookShared = book.getSharedFor().contains(user);
+		if (!isPublic && !isOwner && !isBookShared) {
 			throw new SecurityException(
 					"Cannot get book [id:" + bookId + "] for User [email:" + user.getEmail() +
 					"] with 'read' permissions");

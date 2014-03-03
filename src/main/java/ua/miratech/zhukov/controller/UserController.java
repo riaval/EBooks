@@ -21,7 +21,7 @@ public class UserController {
 
 	@RequestMapping(value = "/book/{bookId}/users", method = RequestMethod.GET)
 	@ResponseBody
-	public List<UserOut> getUserWithSharedBooks(@PathVariable Long bookId) {
+	public List<User> getUserWithSharedBooks(@PathVariable String bookId) {
 		return userService.getUserWithSharedBooks(bookId);
 	}
 

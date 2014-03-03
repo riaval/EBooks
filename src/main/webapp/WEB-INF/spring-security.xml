@@ -20,28 +20,6 @@
             <password-encoder hash="bcrypt" />
         </authentication-provider>
     </authentication-manager>
-    <!--<beans:bean id="userDetailsService" class="com.mycom.security.MongoUserDetailService"/>-->
-
-        <!--<authentication-provider>-->
-            <!--<password-encoder hash="bcrypt" />-->
-            <!--<jdbc-user-service data-source-ref="dataSource"-->
-                               <!--users-by-username-query="-->
-		      <!--SELECT EMAIL AS USERNAME, PASSWORD, 1 AS ENABLED-->
-		      <!--FROM USERS WHERE EMAIL = ?"-->
-
-                               <!--authorities-by-username-query="-->
-                <!--SELECT-->
-                  <!--EMAIL AS USERNAME, ROLE_NAME as AUTHORITY-->
-                <!--FROM-->
-                  <!--USERS-->
-                <!--INNER JOIN-->
-                  <!--ROLES-->
-                    <!--ON USERS.ROLE_ID = ROLES.ROLE_ID-->
-                <!--WHERE-->
-                  <!--EMAIL = ?"-->
-                    <!--/>-->
-        <!--</authentication-provider>-->
-    <!--</authentication-manager>-->
 
 </beans:beans>
 

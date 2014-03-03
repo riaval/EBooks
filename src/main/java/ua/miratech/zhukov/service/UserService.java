@@ -15,5 +15,5 @@ public interface UserService {
 
 	User editUser(EditedUser user, Long userId);
 
-	List<UserOut> getUserWithSharedBooks(Long bookId);
+	List<User> getUserWithSharedBooks(String bookId);
 }

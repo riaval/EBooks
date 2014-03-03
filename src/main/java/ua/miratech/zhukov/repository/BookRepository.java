@@ -1,6 +1,7 @@
 package ua.miratech.zhukov.repository;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -12,16 +13,17 @@ import java.util.List;
 @Repository
 public interface BookRepository extends CrudRepository<Book, String> {
 
-	@Query("{ md5: ?0 }, { storedIndex: 1, _id:0 }")
-	String findStoredIndexByMD5(String md5);
+	@Query("{ md5: ?0 }" )
+	Book findByMD5(String md5);
 
 	@Query("{ owner.$id: ?0 }")
 	List<Book> findBooksByOwner(ObjectId ownerId);
 
-	@Query("{  }")
-	List<Book> findLastBooks(ObjectId ownerId);
+	@Query("{ sharedType: 'PUBLIC' }")
+	List<Book> findLastBooks(); //Pageable pageable
 
-	@Query("{ $id: { $in: ?0 ] } }")
-	List<Book> findBooksByOwner(List<String> storedIndexes);
+	@Query("{ $and: [ { storedIndex: { $in: ?1 } }," +
+			" { $or: [ { sharedType: 'PUBLIC' }, { owner.$id: ?0 }, { sharedFor.$id: ?0 } ] } ] }")
+	List<Book> findBooksWithStoredIndexes(ObjectId currentUserId, List<String> storedIndexes);
 
 }

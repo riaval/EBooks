@@ -22,10 +22,10 @@ $( document ).ready(function() {
     });
 });
 
-function sharedType(iBookId, sType) {
+function sharedType(sBookId, sType) {
     $.ajax({
         type: "POST",
-        url: contextPath + "/book/"+iBookId,
+        url: contextPath + "/book/"+sBookId,
         data: {
             'type': sType
         },
@@ -38,24 +38,26 @@ function sharedType(iBookId, sType) {
     });
 }
 
-function share(iBookId) {
+function share(sBookId) {
     $('#myModal').modal();
-    var users = getSharedUsers(iBookId);
-    sharingBookId = iBookId;
+    var users = getSharedUsers(sBookId);
+    sharingBookId = sBookId;
 }
 
-function getSharedUsers(iBookId) {
+function getSharedUsers(sBookId) {
     var tableBody = $('#sharedUsersTable').find('tbody');
     tableBody.empty();
     $.ajax({
         type: 'GET',
-        url: contextPath + '/book/' + iBookId + '/users',
+        url: contextPath + '/book/' + sBookId + '/users',
         success: function (data) {
             $.each(data, function(index, user) {
+                var quotesBookId = "'" + sBookId + "'";
+                var quotesUserId = "'" + user.id + "'";
                 tableBody.append($('<tr>')
                     .append('<td>' + user.firstName + ' ' + user.lastName + '</td>' +
                         '<td>' + user.email + '</td>' +
-                        '<td><span class="rm-user glyphicon glyphicon-remove" onclick="unShare(this, ' + iBookId + ', '+ user.id +')"></span></td>'));
+                        '<td><span class="rm-user glyphicon glyphicon-remove" onclick="unShare(this, ' + quotesBookId + ', '+ quotesUserId +')"></span></td>'));
             });
         }
     });

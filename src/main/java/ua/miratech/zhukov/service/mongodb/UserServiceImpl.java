@@ -5,10 +5,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+import ua.miratech.zhukov.domain.Book;
 import ua.miratech.zhukov.domain.User;
 import ua.miratech.zhukov.dto.controller.CreatedUser;
 import ua.miratech.zhukov.dto.controller.EditedUser;
-import ua.miratech.zhukov.dto.output.UserOut;
+import ua.miratech.zhukov.repository.BookRepository;
 import ua.miratech.zhukov.repository.UserRepository;
 import ua.miratech.zhukov.service.UserService;
 
@@ -20,6 +21,9 @@ public class UserServiceImpl implements UserService {
 
 	private static final String ROLE_USER = "ROLE_USER";
 	private static final String ROLE_ADMIN = "ROLE_ADMIN";
+
+	@Autowired
+	private BookRepository bookRepository;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -76,12 +80,10 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<UserOut> getUserWithSharedBooks(Long bookId) {
-//		String userEmail = securityService.getUserEmail();
-//
-//		return userMapper.getUserWithSharedBooks(userEmail, bookId);
+	public List<User> getUserWithSharedBooks(String bookId) {
+		Book book = bookRepository.findOne(bookId);
 
-		return null;
+		return book.getSharedFor();
 	}
 
 	private String getUserEmail() {

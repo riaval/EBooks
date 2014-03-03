@@ -70,9 +70,9 @@
 
 <c:forEach var="book" items="${books}">
 	<c:set var="book" value="${book}" scope="request" />
-	<div class="${(user eq book.owner || book.sharedType eq 'PUBLIC' || book.shared) ? 'allowed' : 'not-allowed'}">
+	<%--<div class="${(user eq book.owner || book.sharedType eq 'PUBLIC' || book.shared) ? 'allowed' : 'not-allowed'}">--%>
 		<jsp:include page="../templates/book-include.jsp" />
-	</div>
+	<%--</div>--%>
 </c:forEach>
 
 <jsp:include page="../templates/users-modal-include.jsp" />

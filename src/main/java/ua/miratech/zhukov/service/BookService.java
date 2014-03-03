@@ -18,7 +18,7 @@ public interface BookService {
 
 	void shareBook(String bookId, String granteeEmail);
 
-	void unShareBook(String bookId, String granteeEmail);
+	void unShareBook(String bookId, String granteeId);
 
 	void deleteBook(String bookId) throws IOException;
 

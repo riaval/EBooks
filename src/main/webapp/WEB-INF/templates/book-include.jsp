@@ -16,12 +16,12 @@
 			<a href="${contextPath}/book/${book.id}">${book.title}</a>
 		</div>
 		<div class="col-md-3">
-			<c:if test="${user eq book.owner}">
+			<c:if test="${user eq book.owner.email}">
 				<div class="btn-group" data-toggle="buttons">
-					<label class="btn btn-primary ${book.sharedType == 'PRIVATE' ? 'active' : ''}" onclick="sharedType(${book.id}, 'private')">
+					<label class="btn btn-primary ${book.sharedType == 'PRIVATE' ? 'active' : ''}" onclick="sharedType('${book.id}', 'private')">
 						<input type="radio"> <spring:message code="private"/>
 					</label>
-					<label class="btn btn-primary ${book.sharedType == 'PUBLIC' ? 'active' : ''}" onclick="sharedType(${book.id}, 'public')">
+					<label class="btn btn-primary ${book.sharedType == 'PUBLIC' ? 'active' : ''}" onclick="sharedType('${book.id}', 'public')">
 						<input type="radio"> <spring:message code="public"/>
 					</label>
 				</div>
@@ -65,9 +65,9 @@
 
 		<p>
 
-		<c:if test="${user eq book.owner}">
+		<c:if test="${user eq book.owner.email}">
 		<div class="btn-group">
-			<button class="btn btn-success btn-xs" onclick="share(${book.id})"><spring:message code="share"/></button>
+			<button class="btn btn-success btn-xs" onclick="share('${book.id}')"><spring:message code="share"/></button>
 			<a href="${contextPath}/book/${book.id}/edit" type="button" class="btn btn-warning btn-xs">&nbsp;Edit&nbsp;</a>
 			<a href="${contextPath}/book/delete/${book.id}" type="button" class="btn btn-danger btn-xs"><spring:message code="delete"/></a>
 		</div>
