@@ -1,4 +1,4 @@
-package ua.miratech.zhukov.service;
+package ua.miratech.zhukov.util.component;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;

@@ -5,40 +5,32 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ua.miratech.zhukov.dto.UploadedFile;
-import ua.miratech.zhukov.mapper.BookMapper;
-import ua.miratech.zhukov.mapper.BookMapperMock;
 import ua.miratech.zhukov.service.*;
-import ua.miratech.zhukov.service.implementation.BookServiceImpl;
 import ua.miratech.zhukov.util.component.EbookStorage;
 
 import java.io.IOException;
 
 @RunWith(MockitoJUnitRunner.class)
-@ContextConfiguration(locations = {"file:src/main/webapp/WEB-INF/testContext.xml"})
+//@ContextConfiguration(locations = {"file:src/main/webapp/WEB-INF/testContext.xml"})
 public class BookServiceImpTests {
 
-	@Mock
-	private BookMapper bookMapper = new BookMapperMock();
+//	@Mock
+//	private BookMapper bookMapper = new BookMapperMock();
 
-	@Autowired
-	@Mock
-	private EbookStorage ebookStorage;
-
-	@Mock
-	private FileService fileService = new FileServiceMock();
+//	@Autowired
+//	@Mock
+//	private EbookStorage ebookStorage;
 
 	@Mock
-	private SecurityService securityService = new SecurityServiceMock();
+	private FileService fileService;
 
-	@InjectMocks
-	private BookService bookService = new BookServiceImpl();
+
+//	@InjectMocks
+//	private BookService bookService = new BookServiceImpl();
 
 	@Before
 	public void setup() {

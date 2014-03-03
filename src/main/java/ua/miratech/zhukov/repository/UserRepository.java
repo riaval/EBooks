@@ -9,6 +9,6 @@ import ua.miratech.zhukov.domain.User;
 public interface UserRepository extends CrudRepository<User, String> {
 
 	@Query("{ 'email' : ?0 }")
-	public User findByEmail(String email);
+	User findByEmail(String email);
 
 }

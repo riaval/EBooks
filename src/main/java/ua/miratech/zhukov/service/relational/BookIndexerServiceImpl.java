@@ -1,4 +1,4 @@
-package ua.miratech.zhukov.service.implementation;
+package ua.miratech.zhukov.service.relational;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.lucene.analysis.Analyzer;
@@ -17,9 +17,9 @@ import org.apache.lucene.util.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ua.miratech.zhukov.domain.Book;
 import ua.miratech.zhukov.dto.IndexBook;
 import ua.miratech.zhukov.dto.controller.SearchedBook;
-import ua.miratech.zhukov.dto.output.Book;
 import ua.miratech.zhukov.service.BookIndexerService;
 import ua.miratech.zhukov.util.component.EbookStorage;
 import ua.miratech.zhukov.util.thread.IndexCallable;
@@ -52,7 +52,7 @@ public class BookIndexerServiceImpl implements BookIndexerService {
 				book.getAuthor(),
 				book.getTitle(),
 				book.getPublicationDate(),
-				book.getSize(),
+				book.getFileSize(),
 				book.getStoredIndex() + "." + book.getExtension(),
 				book.getLanguage(),
 				book.getAnnotation(),
@@ -89,7 +89,7 @@ public class BookIndexerServiceImpl implements BookIndexerService {
 	}
 
 	@Override
-	public List<Long> doSimpleSearch(String content) throws IOException, ParseException {
+	public List<String> doSimpleSearch(String content) throws IOException, ParseException {
 		Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_46);
 
 		if (content.isEmpty()) {
@@ -102,7 +102,7 @@ public class BookIndexerServiceImpl implements BookIndexerService {
 	}
 
 	@Override
-	public List<Long> doExtendedSearch(SearchedBook book) throws IOException, ParseException {
+	public List<String> doExtendedSearch(SearchedBook book) throws IOException, ParseException {
 		Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_46);
 		BooleanQuery booleanQuery = new BooleanQuery();
 
@@ -134,17 +134,17 @@ public class BookIndexerServiceImpl implements BookIndexerService {
 		return doSearch(booleanQuery);
 	}
 
-	private List<Long> doSearch (Query query) throws IOException {
+	private List<String> doSearch (Query query) throws IOException {
 		IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(ebookStorage.getIndexCatalogue())));
 		IndexSearcher searcher = new IndexSearcher(reader);
 
 		TopDocs results = searcher.search(query, 10);
 		ScoreDoc[] hits = results.scoreDocs;
-		List<Long> storedIndexes = new ArrayList<>();
+		List<String> storedIndexes = new ArrayList<>();
 		for (ScoreDoc hit : hits) {
 			Document doc = searcher.doc(hit.doc);
 			String fileName = doc.get("fileName");
-			Long storedIndex = Long.parseLong(FilenameUtils.removeExtension(fileName));
+			String storedIndex = FilenameUtils.removeExtension(fileName);
 			storedIndexes.add(storedIndex);
 		}
 		reader.close();

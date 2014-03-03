@@ -1,4 +1,4 @@
-package ua.miratech.zhukov.service.implementation;
+package ua.miratech.zhukov.service.relational;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
-import ua.miratech.zhukov.dto.output.Book;
+import ua.miratech.zhukov.domain.Book;
+import ua.miratech.zhukov.domain.User;
 import ua.miratech.zhukov.dto.output.DownloadBook;
-import ua.miratech.zhukov.mapper.BookMapper;
 import ua.miratech.zhukov.service.*;
 import ua.miratech.zhukov.util.thread.UnCompressCallable;
 import ua.miratech.zhukov.dto.UploadedFile;
@@ -29,7 +29,7 @@ import java.util.zip.ZipFile;
 public class FileServiceImpl implements FileService {
 
 	@Autowired
-	private SecurityService securityService;
+	private UserService userService;
 
 	@Autowired
 	private BookService bookService;
@@ -69,11 +69,11 @@ public class FileServiceImpl implements FileService {
 				converterService.convertToFb2(uploadedFile);
 			}
 
-			String userEmail = securityService.getUserEmail();
+			User user = userService.getCurrentUser();
 			if ("application/zip".equals(uploadedFile.getType())) {
-				service.submit(new UnCompressCallable(this, uploadedFile, userEmail));
+				service.submit(new UnCompressCallable(this, uploadedFile, user));
 			} else {
-				Long id = bookService.addBook(uploadedFile, userEmail);
+				String id = bookService.addBook(uploadedFile, user);
 				uploadedFile.setDeleteUrl("/Ebooks/book/delete/" + id);
 				uploadedFile.setType("text");
 			}
@@ -84,7 +84,7 @@ public class FileServiceImpl implements FileService {
 		return files;
 	}
 
-	public void uploadZipFile(UploadedFile uf, String userEmail) throws IOException {
+	public void uploadZipFile(UploadedFile uf, User user) throws IOException {
 		Long systemTime = Calendar.getInstance().getTime().getTime();
 		String zipDirPath = ebookStorage.getTempCatalogue() + systemTime;
 		String zipFilePath = zipDirPath + "." + FilenameUtils.getExtension(uf.getName());
@@ -106,14 +106,14 @@ public class FileServiceImpl implements FileService {
 					null
 			);
 
-			bookService.addBook(uploadedFile, userEmail);
+			bookService.addBook(uploadedFile, user);
 		}
 
 		FileUtils.deleteDirectory(zipDir);
 		zipFile.delete();
 	}
 
-	public void deleteFile(Long storedIndex) {
+	public void deleteFile(String storedIndex) {
 		File dir = new File(ebookStorage.getMainCatalogue());
 		FileFilter fileFilter = new WildcardFileFilter(storedIndex + ".*");
 		File[] files = dir.listFiles(fileFilter);

@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import ua.miratech.zhukov.domain.Book;
 import ua.miratech.zhukov.dto.controller.EditedBook;
-import ua.miratech.zhukov.dto.output.Book;
 import ua.miratech.zhukov.service.BookService;
 
 import javax.validation.Valid;
@@ -21,7 +21,7 @@ public class EditBookController {
 	BookService bookService;
 
 	@RequestMapping(value = "/book/{bookId}/edit", method = RequestMethod.GET)
-	public String printEditBookPage(@PathVariable Long bookId, ModelMap model) throws Exception {
+	public String printEditBookPage(@PathVariable String bookId, ModelMap model) throws Exception {
 		Book book = bookService.getBookForEditing(bookId);
 
 		model.addAttribute("book", book);
@@ -30,7 +30,7 @@ public class EditBookController {
 
 	@RequestMapping(value = "/book/{bookId}/edit", method = RequestMethod.POST)
 	@ResponseStatus(value = HttpStatus.OK)
-	public void editBook(@PathVariable Long bookId, @Valid EditedBook book) throws Exception {
+	public void editBook(@PathVariable String bookId, @Valid EditedBook book) throws Exception {
 		book.setId(bookId);
 		bookService.updateBook(book);
 	}

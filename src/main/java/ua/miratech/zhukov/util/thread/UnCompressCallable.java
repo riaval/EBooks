@@ -1,8 +1,9 @@
 package ua.miratech.zhukov.util.thread;
 
 import org.apache.log4j.Logger;
+import ua.miratech.zhukov.domain.User;
 import ua.miratech.zhukov.service.FileService;
-import ua.miratech.zhukov.service.implementation.FileServiceImpl;
+import ua.miratech.zhukov.service.relational.FileServiceImpl;
 import ua.miratech.zhukov.dto.UploadedFile;
 
 import java.util.concurrent.Callable;
@@ -13,18 +14,18 @@ public class UnCompressCallable implements Callable<Boolean> {
 
 	private FileService fileService;
 	private UploadedFile uploadedFile;
-	private String userEmail;
+	private User user;
 
-	public UnCompressCallable(FileServiceImpl fileService, UploadedFile uploadedFile, String userEmail) {
+	public UnCompressCallable(FileServiceImpl fileService, UploadedFile uploadedFile, User user) {
 		this.fileService = fileService;
 		this.uploadedFile = uploadedFile;
-		this.userEmail = userEmail;
+		this.user = user;
 	}
 
 	@Override
 	public Boolean call() throws Exception {
 		logger.info("-> Thread with zip extracting [file_name:" + uploadedFile.getName() + "] started");
-		fileService.uploadZipFile(uploadedFile, userEmail);
+		fileService.uploadZipFile(uploadedFile, user);
 		logger.info("-> Thread with zip extracting [file_name:" + uploadedFile.getName() + "] finished");
 		return true;
 	}

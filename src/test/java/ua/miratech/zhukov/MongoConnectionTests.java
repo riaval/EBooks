@@ -7,10 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import ua.miratech.zhukov.domain.Book;
 import ua.miratech.zhukov.domain.User;
+import ua.miratech.zhukov.repository.BookRepository;
 import ua.miratech.zhukov.repository.UserRepository;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.UUID;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -19,6 +22,9 @@ public class MongoConnectionTests {
 
 	@Autowired
 	UserRepository userRepository;
+
+	@Autowired
+	BookRepository bookRepository;
 
 	@Test
 	public void connectionTest() {
@@ -32,10 +38,16 @@ public class MongoConnectionTests {
 //		user.setId(UUID.randomUUID());
 //		mongoTemplate.insert(user);
 
-		User user = userRepository.findByEmail("ls2294@gmai.com");
+		User user = userRepository.findByEmail("ls2294@gmail.com");
 		System.out.println(user.getFirstName());
 //		Long size = userRepository.count();
 //		System.out.println(size);
+	}
+
+	@Test
+	public void bookTest() {
+		System.out.println(bookRepository.findAll());
+//		List<Book> books = bookRepository.findAll();
 	}
 
 }

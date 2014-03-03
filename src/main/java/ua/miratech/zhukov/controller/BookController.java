@@ -35,7 +35,7 @@ public class BookController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/book/{bookId}", method = RequestMethod.GET)
-	public String printReadBookPage(@PathVariable Long bookId, ModelMap model) throws Exception {
+	public String printReadBookPage(@PathVariable String bookId, ModelMap model) throws Exception {
 		ReadingBook readingBook = bookService.getReadingBookById(bookId);
 
 		model.addAttribute("readingBook", readingBook);
@@ -53,7 +53,7 @@ public class BookController {
 			MediaType.APPLICATION_OCTET_STREAM_VALUE
 	})
 	@ResponseBody
-	public FileSystemResource downloadFile(@PathVariable Long bookId, HttpServletResponse response) {
+	public FileSystemResource downloadFile(@PathVariable String bookId, HttpServletResponse response) {
 		DownloadBook book = bookService.downloadBook(bookId);
 
 		response.setHeader("content-Disposition", "attachment; filename=" + book.getFileName());
@@ -70,7 +70,7 @@ public class BookController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/book/delete/{bookId}", method = RequestMethod.GET)
-	public String deleteBook(@PathVariable Long bookId, HttpServletRequest request) throws Exception {
+	public String deleteBook(@PathVariable String bookId, HttpServletRequest request) throws Exception {
 		bookService.deleteBook(bookId);
 
 		String previousPage = request.getHeader("Referer");
@@ -85,7 +85,7 @@ public class BookController {
 	 */
 	@RequestMapping(value = "/book/delete/{bookId}", method = RequestMethod.DELETE)
 	@ResponseStatus(value = HttpStatus.OK)
-	public void deleteBookAPI(@PathVariable Long bookId) throws IOException {
+	public void deleteBookAPI(@PathVariable String bookId) throws IOException {
 		bookService.deleteBook(bookId);
 	}
 
@@ -97,7 +97,7 @@ public class BookController {
 	 */
 	@RequestMapping(value = "/book/{bookId}", method = RequestMethod.POST, params = {"type"})
 	@ResponseStatus(value = HttpStatus.OK)
-	public void setType(@PathVariable Long bookId, @RequestParam(value = "type") String type) {
+	public void setType(@PathVariable String bookId, @RequestParam(value = "type") String type) {
 		SharedType sharedType = null;
 		switch (type) {
 			case "public":
@@ -119,7 +119,7 @@ public class BookController {
 	 */
 	@RequestMapping(value = "/book/share/{bookId}", method = RequestMethod.POST, params = {"email"})
 	@ResponseStatus(value = HttpStatus.CREATED)
-	public void shareBook(@PathVariable Long bookId, @RequestParam(value = "email") String email) {
+	public void shareBook(@PathVariable String bookId, @RequestParam(value = "email") String email) {
 		bookService.shareBook(bookId, email);
 	}
 
@@ -127,12 +127,12 @@ public class BookController {
 	 * Позволяет убрать предоставленные права доступа к книге
 	 *
 	 * @param bookId ID книги
-	 * @param userId ID пользователя, которому был предоставлен доступ
+	 * @param userEmail Email пользователя, которому был предоставлен доступ
 	 */
 	@RequestMapping(value = "/books/{bookId}/users/{userId}/delete", method = RequestMethod.POST)
 	@ResponseStatus(value = HttpStatus.OK)
-	public void unShareBook(@PathVariable Long bookId, @PathVariable Long userId) {
-		bookService.unShareBook(bookId, userId);
+	public void unShareBook(@PathVariable String bookId, @PathVariable String userEmail) {
+		bookService.unShareBook(bookId, userEmail);
 	}
 
 }

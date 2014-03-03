@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import ua.miratech.zhukov.domain.User;
 import ua.miratech.zhukov.dto.output.UserOut;
 import ua.miratech.zhukov.dto.controller.EditedUser;
 import ua.miratech.zhukov.service.UserService;
@@ -26,7 +27,7 @@ public class UserController {
 
 	@RequestMapping(value = "/profile", method = RequestMethod.GET)
 	public String printProfilePage(ModelMap model) {
-		UserOut user = userService.getCurrentUser();
+		User user = userService.getCurrentUser();
 
 		model.addAttribute("user", user);
 		return "profile-page-tiles";

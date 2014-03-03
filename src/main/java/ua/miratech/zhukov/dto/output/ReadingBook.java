@@ -1,7 +1,7 @@
 package ua.miratech.zhukov.dto.output;
 
 import org.w3c.dom.NodeList;
-import ua.miratech.zhukov.dto.output.Book;
+import ua.miratech.zhukov.domain.Book;
 
 public class ReadingBook extends Book {
 
@@ -14,18 +14,20 @@ public class ReadingBook extends Book {
 		super(
 				book.getAuthor(),
 				book.getTitle(),
-				book.getPublicationDate(),
-				book.getFileName(),
-				book.getSize(),
-				book.getSha1(),
-				book.getOwner(),
-				book.getLanguage(),
-				book.getExtension(),
 				book.getAnnotation(),
 				book.getIsbn(),
+				book.getLanguage(),
+				book.getGenres(),
+				book.getFileName(),
+				book.getExtension(),
+				book.getFileSize(),
+				book.getMd5(),
+				book.getOwner(),
 				book.getSharedType(),
-				book.getGenres()
-		);
+				book.getStoredIndex(),
+				book.getPublicationDate(),
+				book.getSharedFor()
+			);
 		this.content = content;
 	}
 

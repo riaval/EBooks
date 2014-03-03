@@ -59,7 +59,7 @@
 
 		<div>
 			<strong><spring:message code="download"/>: </strong><a href="${contextPath}/file/${book.id}">
-			${book.extension} (<fmt:formatNumber type="number" maxFractionDigits="0" value="${book.size / 1024}" />Kb)
+			${book.extension} (<fmt:formatNumber type="number" maxFractionDigits="0" value="${book.fileSize / 1024}" />Kb)
 		</a>
 		</div>
 

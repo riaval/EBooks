@@ -1,8 +1,9 @@
 package ua.miratech.zhukov.service;
 
 import org.springframework.web.multipart.MultipartFile;
+import ua.miratech.zhukov.domain.Book;
+import ua.miratech.zhukov.domain.User;
 import ua.miratech.zhukov.dto.UploadedFile;
-import ua.miratech.zhukov.dto.output.Book;
 import ua.miratech.zhukov.dto.output.DownloadBook;
 
 import java.io.IOException;
@@ -15,9 +16,9 @@ public interface FileService {
 
 	boolean saveFile(byte[] bytes, Book book) throws IOException;
 
-	void deleteFile(Long storedIndex);
+	void deleteFile(String storedIndex);
 
 	DownloadBook getDownloadBook(Book book);
 
-	void uploadZipFile(UploadedFile uploadedFile, String userEmail) throws IOException;
+	void uploadZipFile(UploadedFile uploadedFile, User user) throws IOException;
 }

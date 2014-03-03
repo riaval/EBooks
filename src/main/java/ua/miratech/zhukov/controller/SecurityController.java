@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import ua.miratech.zhukov.dto.controller.CreatedUser;
 import ua.miratech.zhukov.service.UserService;
-import ua.miratech.zhukov.service.implementation.UserServiceImpl;
 
 import javax.validation.Valid;
 

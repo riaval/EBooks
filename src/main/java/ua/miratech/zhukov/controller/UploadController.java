@@ -8,9 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import ua.miratech.zhukov.service.BookService;
 import ua.miratech.zhukov.service.FileService;
-import ua.miratech.zhukov.service.implementation.FileServiceImpl;
 import ua.miratech.zhukov.dto.UploadedFile;
 
 import java.util.List;
