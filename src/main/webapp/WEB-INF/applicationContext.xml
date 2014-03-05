@@ -1,19 +1,24 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:mongo="http://www.springframework.org/schema/data/mongo"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- properties -->
+    <context:property-placeholder location="classpath*:strings.properties"/>
+
+    <!-- Apache Lucene version -->
+    <bean id="luceneVersion" class="org.apache.lucene.util.Version" factory-method="valueOf">
+        <constructor-arg value="LUCENE_46"/>
+    </bean>
 
     <context:component-scan base-package="ua.miratech.zhukov.service,
                                           ua.miratech.zhukov.util.component"/>
 
-    <!-- scan for mappers and let them be autowired -->
-    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="ua.miratech.zhukov.mapper" />
-    </bean>
-
-    <bean id="executorService" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool" destroy-method="shutdown" />
+    <bean id="executorService" class="java.util.concurrent.Executors"
+          factory-method="newCachedThreadPool" destroy-method="shutdown" />
 
     <!-- MongoDB -->
     <import resource="mongo-config.xml" />

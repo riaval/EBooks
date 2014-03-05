@@ -120,6 +120,7 @@ code {
 .title-content {
 	float: left;
 	width: 710px;
+	padding-left: 0 !important;
 }
 
 .rm-user {

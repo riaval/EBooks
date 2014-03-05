@@ -1,9 +1,9 @@
 package ua.miratech.zhukov.service;
 
+import org.bson.types.ObjectId;
 import ua.miratech.zhukov.domain.User;
 import ua.miratech.zhukov.dto.controller.CreatedUser;
 import ua.miratech.zhukov.dto.controller.EditedUser;
-import ua.miratech.zhukov.dto.output.UserOut;
 
 import java.util.List;
 
@@ -13,7 +13,11 @@ public interface UserService {
 
 	User getCurrentUser();
 
-	User editUser(EditedUser user, Long userId);
+	ObjectId getCurrentUserObjectId();
+
+	String getCurrentUserEmail();
+
+	User editUser(EditedUser user, String userId);
 
 	List<User> getUserWithSharedBooks(String bookId);
 }

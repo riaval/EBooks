@@ -127,7 +127,7 @@ public class BookController {
 	 * Позволяет убрать предоставленные права доступа к книге
 	 *
 	 * @param bookId ID книги
-	 * @param userEmail Email пользователя, которому был предоставлен доступ
+	 * @param granteeId Id пользователя, которому был предоставлен доступ
 	 */
 	@RequestMapping(value = "/books/{bookId}/users/{granteeId}/delete", method = RequestMethod.POST)
 	@ResponseStatus(value = HttpStatus.OK)

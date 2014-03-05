@@ -1,6 +1,5 @@
 package ua.miratech.zhukov.dto.controller;
 
-import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 
 public class EditedUser {
@@ -16,6 +15,17 @@ public class EditedUser {
 	private String newPassword;
 
 	private String newPasswordAgain;
+
+	public EditedUser() { }
+
+	public EditedUser(String firstName, String lastName, String oldPassword, String newPassword,
+					  String newPasswordAgain) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.oldPassword = oldPassword;
+		this.newPassword = newPassword;
+		this.newPasswordAgain = newPasswordAgain;
+	}
 
 	public String getFirstName() {
 		return firstName;

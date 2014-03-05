@@ -1,5 +1,6 @@
 package ua.miratech.zhukov;
 
+import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -27,27 +28,17 @@ public class MongoConnectionTests {
 	BookRepository bookRepository;
 
 	@Test
-	public void connectionTest() {
-//		User user = new User("ls2294@gmai.com", "password", "fist", "last",
-//				Calendar.getInstance().getTime(),
-//				"ROLE_USER");
-//
-//		if (!mongoTemplate.collectionExists(User.class)) {
-//			mongoTemplate.createCollection(User.class);
-//		}
-//		user.setId(UUID.randomUUID());
-//		mongoTemplate.insert(user);
+	public void userTest() {
+		long count = userRepository.count();
 
-		User user = userRepository.findByEmail("ls2294@gmail.com");
-		System.out.println(user.getFirstName());
-//		Long size = userRepository.count();
-//		System.out.println(size);
+		Assert.assertTrue(count >= 0);
 	}
 
 	@Test
 	public void bookTest() {
-		System.out.println(bookRepository.findAll());
-//		List<Book> books = bookRepository.findAll();
+		long count = bookRepository.count();
+
+		Assert.assertTrue(count >= 0);
 	}
 
 }

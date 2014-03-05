@@ -6,7 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import ua.miratech.zhukov.domain.User;
-import ua.miratech.zhukov.dto.output.UserOut;
 import ua.miratech.zhukov.dto.controller.EditedUser;
 import ua.miratech.zhukov.service.UserService;
 
@@ -35,7 +34,7 @@ public class UserController {
 
 	@RequestMapping(value = "/users/{userId}/edit", method = RequestMethod.POST)
 	@ResponseStatus(value = HttpStatus.OK)
-	public void editUser(@Valid EditedUser user, @PathVariable Long userId) {
+	public void editUser(@Valid EditedUser user, @PathVariable String userId) {
 		userService.editUser(user, userId);
 	}
 

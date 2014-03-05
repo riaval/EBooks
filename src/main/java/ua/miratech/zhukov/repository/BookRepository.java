@@ -19,8 +19,9 @@ public interface BookRepository extends CrudRepository<Book, String> {
 	@Query("{ owner.$id: ?0 }")
 	List<Book> findBooksByOwner(ObjectId ownerId);
 
-	@Query("{ sharedType: 'PUBLIC' }")
-	List<Book> findLastBooks(); //Pageable pageable
+	@Query("{ $or: [ { sharedType: 'PUBLIC' }, " +
+			"{ $and: [ { sharedFor.$id: ?0 }, { sharedFor.$id: { $exists: true } } ] } ] }  }")
+	List<Book> findLastBooks(ObjectId currentUserId); //Pageable pageable
 
 	@Query("{ $and: [ { storedIndex: { $in: ?1 } }," +
 			" { $or: [ { sharedType: 'PUBLIC' }, { owner.$id: ?0 }, { sharedFor.$id: ?0 } ] } ] }")

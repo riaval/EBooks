@@ -11,7 +11,7 @@
 <div class="row">
 	<!-- title row -->
 	<h2 class="book-title my-book-title">
-		<div class="title-content col-md-9">
+		<div class="title-content col-md-9 ">
 			<img height="18px" width="35px" src="<c:url value="/img/book.png" />">
 			<a href="${contextPath}/book/${book.id}">${book.title}</a>
 		</div>
@@ -57,10 +57,16 @@
 			<strong>IBSN: </strong>${book.isbn}
 		</p>
 
+		<p>
+			<strong><spring:message code="download"/>: </strong>
+			<a href="${contextPath}/file/${book.id}">
+				${book.extension} (<fmt:formatNumber type="number" maxFractionDigits="0" value="${book.fileSize / 1024}" />Kb)
+			</a>
+		</p>
+
 		<div>
-			<strong><spring:message code="download"/>: </strong><a href="${contextPath}/file/${book.id}">
-			${book.extension} (<fmt:formatNumber type="number" maxFractionDigits="0" value="${book.fileSize / 1024}" />Kb)
-		</a>
+			<strong>Owner: </strong>
+			${book.owner.firstName} ${book.owner.lastName}
 		</div>
 
 		<p>

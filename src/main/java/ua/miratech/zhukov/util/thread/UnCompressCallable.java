@@ -3,7 +3,7 @@ package ua.miratech.zhukov.util.thread;
 import org.apache.log4j.Logger;
 import ua.miratech.zhukov.domain.User;
 import ua.miratech.zhukov.service.FileService;
-import ua.miratech.zhukov.service.relational.FileServiceImpl;
+import ua.miratech.zhukov.service.implementation.FileServiceImpl;
 import ua.miratech.zhukov.dto.UploadedFile;
 
 import java.util.concurrent.Callable;

@@ -48,12 +48,12 @@ public class FictionBookParser {
 	}
 
 	public String getAuthor() {
-		InputSource source1 = new InputSource(new StringReader(xmlValue));
+		InputSource source = new InputSource(new StringReader(xmlValue));
 		InputSource source2 = new InputSource(new StringReader(xmlValue));
 		String firstName = null;
 		String lastName = null;
 		try {
-			firstName = xpath.evaluate("/df:FictionBook/df:description/df:title-info/df:author/df:first-name", source1)
+			firstName = xpath.evaluate("/df:FictionBook/df:description/df:title-info/df:author/df:first-name", source)
 					.trim();
 			lastName = xpath.evaluate("/df:FictionBook/df:description/df:title-info/df:author/df:last-name", source2)
 					.trim();

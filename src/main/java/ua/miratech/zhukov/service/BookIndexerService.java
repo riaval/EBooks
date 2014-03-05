@@ -12,7 +12,7 @@ public interface BookIndexerService {
 
 	void indexFile(byte[] fileContent, Book book) throws IOException;
 
-	public void doIndex(IndexBook book) throws IOException;
+	public void createIndex(IndexBook book) throws IOException;
 
 	public void deleteIndex(String fileName) throws IOException;
 

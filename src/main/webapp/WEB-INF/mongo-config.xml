@@ -22,17 +22,4 @@
     <!-- Use this post processor to translate any MongoExceptions thrown in @Repository annotated classes -->
     <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
 
-    <!--&lt;!&ndash; Mongo config &ndash;&gt;-->
-    <!--<mongo:db-factory id="mongoDbFactory"-->
-                      <!--host="localhost"-->
-                      <!--port="27017"-->
-                      <!--dbname="test" />-->
-
-    <!--<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">-->
-        <!--<constructor-arg ref="mongoDbFactory" />-->
-    <!--</bean>-->
-
-    <!--<context:component-scan base-package="ua.miratech.zhukov.repository"/>-->
-    <!--<mongo:repositories base-package="ua.miratech.zhukov.repository" />-->
-
 </beans>

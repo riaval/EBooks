@@ -22,7 +22,7 @@ public class IndexCallable implements Callable<Boolean> {
 	@Override
 	public Boolean call() throws IOException {
 		logger.info("-> Thread with book indexing [file_name:" + book.getFileName() + "] started");
-		bookIndexerService.doIndex(book);
+		bookIndexerService.createIndex(book);
 		logger.info("<- Thread with book indexing [file_name:" + book.getFileName() + "] finished");
 		return true;
 	}

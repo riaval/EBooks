@@ -1,4 +1,4 @@
-package ua.miratech.zhukov.service.mongodb;
+package ua.miratech.zhukov.service.implementation;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -8,7 +8,6 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.NodeList;
 import ua.miratech.zhukov.domain.Book;
@@ -134,16 +133,16 @@ public class BookServiceImpl implements BookService {
 
 	@Override
 	public List<Book> getMyBooks() {
-		User user = userService.getCurrentUser();
+		ObjectId userObjectId = userService.getCurrentUserObjectId();
 
-		return bookRepository.findBooksByOwner( new ObjectId(user.getId()) );
+		return bookRepository.findBooksByOwner(userObjectId);
 	}
 
 	@Override
 	public List<Book> getLastBooks() {
-		User user = userService.getCurrentUser();
+		ObjectId userObjectId = userService.getCurrentUserObjectId();
 
-		return bookRepository.findLastBooks();
+		return bookRepository.findLastBooks(userObjectId);
 	}
 
 	@Override
@@ -152,10 +151,13 @@ public class BookServiceImpl implements BookService {
 
 		// Deleting from database
 		bookRepository.delete(book);
-		// Deleting from storage
-		fileService.deleteFile(book.getStoredIndex());
-		// Deleting file index
-		bookIndexerService.deleteIndex(book.getStoredIndex() + "." + book.getExtension());
+
+		if (bookRepository.findByMD5(book.getMd5()) == null) {
+			// Deleting from storage
+			fileService.deleteFile(book.getStoredIndex());
+			// Deleting file index
+			bookIndexerService.deleteIndex(book.getStoredIndex() + "." + book.getExtension());
+		}
 	}
 
 	@Override
@@ -196,20 +198,10 @@ public class BookServiceImpl implements BookService {
 		users.add(granteeUser);
 
 		bookRepository.save(book);
-//		switch (shareInParam.getResultStatus()) {
-//			case 0:
-//				throw new IllegalArgumentException("Already shared");
-//			case -1:
-//				throw new IllegalArgumentException("User owner not found");
-//			case -2:
-//
-//			case -3:
-//				throw new IllegalArgumentException("Book not found");
-//			case -4:
-//				throw new IllegalArgumentException("Owner and grantee is the same user");
-//			case -5:
-//				throw new SecurityException("User does not have required permissions");
-//		}
+
+//		TODO Solve this problem
+//		throw new IllegalArgumentException("Owner and grantee is the same user");
+//		throw new IllegalArgumentException("Already shared");
 	}
 
 	@Override
@@ -248,7 +240,6 @@ public class BookServiceImpl implements BookService {
 	}
 
 	@Override
-	@Secured({"ROLE_USER"})
 	public List<Book> doExtendedSearch(SearchedBook searchedBook) {
 		List<String> storedIndexes = null;
 		try {
@@ -265,9 +256,9 @@ public class BookServiceImpl implements BookService {
 		if (storedIndexes.size() == 0) {
 			return null;
 		}
-		User user = userService.getCurrentUser();
+		ObjectId userObjectId = userService.getCurrentUserObjectId();
 
-		return bookRepository.findBooksWithStoredIndexes(new ObjectId(user.getId()), storedIndexes);
+		return bookRepository.findBooksWithStoredIndexes(userObjectId, storedIndexes);
 	}
 
 	private Book checkWritePermissions(String bookId) {

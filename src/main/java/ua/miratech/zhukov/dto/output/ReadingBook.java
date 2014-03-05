@@ -7,8 +7,7 @@ public class ReadingBook extends Book {
 
 	private NodeList content;
 
-	public ReadingBook() {
-	}
+	public ReadingBook() { }
 
 	public ReadingBook(Book book, NodeList content) {
 		super(

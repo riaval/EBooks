@@ -18,12 +18,12 @@ public class SecurityController {
 	UserService userService;
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public String printLogInPage(ModelMap model) {
+	public String printLogInPage() {
 		return "sign-in-tiles";
 	}
 
 	@RequestMapping(value = "/signup", method = RequestMethod.GET)
-	public String printSignUpPage(ModelMap model) {
+	public String printSignUpPage() {
 		return "sign-up-tiles";
 	}
 
