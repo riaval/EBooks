@@ -228,6 +228,9 @@ public class BookServiceImpl implements BookService {
 
 	@Override
 	public List<Book> doSimpleSearch(String content) {
+		if (content == null || content.isEmpty()) {
+			return null;
+		}
 		List<String> storedIndexes;
 		try {
 			storedIndexes = bookIndexerService.doSimpleSearch(content);

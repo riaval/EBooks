@@ -13,6 +13,16 @@
 		$("#searchSubmit").click(function(){
 			$("#searchContent").find(".active form").submit();
 		});
+
+		$("#searchClear").click(function() {
+			$('form').find("input[type=text], textarea").val("");
+		});
+
+		$("form input").keydown(function(e) {
+			if (e.keyCode == 13) {
+				$('form').submit();
+			}
+		});
 	});
 </script>
 
@@ -25,6 +35,7 @@
 		<li class="${param.searchType == 'extended' ? '' : 'active'}"><a data-toggle="tab" href="#search-simple"><spring:message code="simple"/></a></li>
 		<li class="${param.searchType == 'extended' ? 'active' : ''}"><a data-toggle="tab" href="#search-extended"><spring:message code="extended"/></a></li>
 		<li style="float: right"><button type="button" class="btn btn-primary" id="searchSubmit"><spring:message code="searchBt"/></button></li>
+		<li style="float: right"><button type="button" class="btn btn-default" id="searchClear"><spring:message code="clear"/></button></li>
 	</ul>
 	<div class="tab-content" id="searchContent">
 		<div id="search-simple" class="tab-pane fade ${param.searchType == 'extended' ? '' : 'active in'}">
@@ -35,6 +46,19 @@
 				</div>
 				<input name="searchType" type="hidden" value="simple">
 			</form>
+
+			<c:if test="${param.searchType == 'simple'}">
+				<div class="search-result">
+					<c:if test="${empty books}">
+						<p class="lead"><spring:message code="nothingFound"/></p>
+					</c:if>
+
+					<c:forEach var="book" items="${books}">
+						<c:set var="book" value="${book}" scope="request" />
+						<jsp:include page="../templates/book-include.jsp" />
+					</c:forEach>
+				</div>
+			</c:if>
 		</div>
 		<div id="search-extended" class="tab-pane fade ${param.searchType == 'extended' ? 'active in' : ''}">
 			<form method="GET" action="${contextPath}/search">
@@ -64,16 +88,22 @@
 				</div>
 				<input name="searchType" type="hidden" value="extended">
 			</form>
+
+			<c:if test="${param.searchType == 'extended'}">
+			<div class="search-result">
+				<c:if test="${empty books}">
+					<p class="lead"><spring:message code="nothingFound"/></p>
+				</c:if>
+
+				<c:forEach var="book" items="${books}">
+					<c:set var="book" value="${book}" scope="request" />
+					<jsp:include page="../templates/book-include.jsp" />
+				</c:forEach>
+			</div>
+			</c:if>
 		</div>
 	</div>
 </div>
-
-<c:forEach var="book" items="${books}">
-	<c:set var="book" value="${book}" scope="request" />
-	<%--<div class="${(user eq book.owner || book.sharedType eq 'PUBLIC' || book.shared) ? 'allowed' : 'not-allowed'}">--%>
-		<jsp:include page="../templates/book-include.jsp" />
-	<%--</div>--%>
-</c:forEach>
 
 <jsp:include page="../templates/users-modal-include.jsp" />
 

@@ -111,7 +111,7 @@ public class BookIndexerServiceImpl implements BookIndexerService {
 			return null;
 		}
 
-		Query contentQuery = new QueryParser(luceneVersion, content, analyzer).parse(content);
+		Query contentQuery = new QueryParser(luceneVersion, this.content, analyzer).parse(content);
 
 		return doSearch(contentQuery);
 	}

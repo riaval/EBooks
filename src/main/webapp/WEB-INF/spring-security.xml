@@ -10,7 +10,7 @@
         <intercept-url pattern="/mybooks*" access="isAuthenticated()" />
         <intercept-url pattern="/upload*" access="isAuthenticated()" />
         <intercept-url pattern="/profile*" access="isAuthenticated()" />
-        <form-login login-page="/login" default-target-url="/search"
+        <form-login login-page="/login" default-target-url="/"
                     authentication-failure-url="/login" />
         <logout logout-success-url="/" />
     </http>

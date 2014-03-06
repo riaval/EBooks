@@ -68,6 +68,10 @@
 			<strong>Owner: </strong>
 			${book.owner.firstName} ${book.owner.lastName}
 		</div>
+		<div>
+			<strong>Published: </strong>
+			<fmt:formatDate value="${book.publicationDate}" pattern="dd-MM-yyyy: hh:mm" />
+		</div>
 
 		<p>
 

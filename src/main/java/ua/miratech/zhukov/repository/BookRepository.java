@@ -16,15 +16,15 @@ public interface BookRepository extends CrudRepository<Book, String> {
 	@Query("{ md5: ?0 }" )
 	Book findByMD5(String md5);
 
-	@Query("{ owner.$id: ?0 }")
+	@Query("{ $query: { owner.$id: ?0 }, $orderby: { publicationDate : -1 } }")
 	List<Book> findBooksByOwner(ObjectId ownerId);
 
-	@Query("{ $or: [ { sharedType: 'PUBLIC' }, " +
-			"{ $and: [ { sharedFor.$id: ?0 }, { sharedFor.$id: { $exists: true } } ] } ] }  }")
+	@Query("{ $query: { $or: [ { sharedType: 'PUBLIC' }, " +
+			"{ $and: [ { sharedFor.$id: ?0 }, { sharedFor.$id: { $exists: true } } ] } ] }  }, $orderby: { publicationDate : -1 } }")
 	List<Book> findLastBooks(ObjectId currentUserId); //Pageable pageable
 
 	@Query("{ $and: [ { storedIndex: { $in: ?1 } }," +
-			" { $or: [ { sharedType: 'PUBLIC' }, { owner.$id: ?0 }, { sharedFor.$id: ?0 } ] } ] }")
+			" { $or: [ { sharedType: 'PUBLIC' }, { owner.$id: ?0 }, { $and: [ { sharedFor.$id: ?0 }, { sharedFor.$id: { $exists: true } } ] } ] }   ] } ] }")
 	List<Book> findBooksWithStoredIndexes(ObjectId currentUserId, List<String> storedIndexes);
 
 }

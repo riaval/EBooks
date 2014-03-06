@@ -7,6 +7,10 @@
 			<h1><spring:message code="lastbookTitle"/></h1>
 		</div>
 
+		<c:if test="${empty books}">
+			<p class="lead"><spring:message code="nothingSoFar"/></p>
+		</c:if>
+
 		<c:forEach var="book" items="${books}">
 			<c:set var="book" value="${book}" scope="request" />
 			<jsp:include page="../templates/book-include.jsp" />

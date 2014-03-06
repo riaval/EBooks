@@ -33,7 +33,7 @@
 
     <definition name="read-page-tiles" extends="template-main">
         <put-attribute name="content" value="/WEB-INF/pages/readBook.jsp"/>
-        <put-attribute name="title" value="read"/>
+        <put-attribute name="title" value="Read book"/>
     </definition>
 
     <definition name="edit-page-tiles" extends="template-main">

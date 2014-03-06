@@ -30,7 +30,6 @@
         </param-value>
     </context-param>
 
-
     <!--Log4j Logging Settings-->
     <context-param>
         <param-name>log4jConfigLocation</param-name>

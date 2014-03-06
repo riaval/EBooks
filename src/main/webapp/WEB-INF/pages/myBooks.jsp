@@ -9,6 +9,15 @@
 			<h1><spring:message code="mybooksTitle"/></h1>
 		</div>
 
+		<c:if test="${empty books}">
+			<p class="lead"><spring:message code="nothingSoFar"/></p>
+			<p >
+				<spring:message code="emptyMessage.start"/>
+				<a href="${contextPath}/upload"><spring:message code="emptyMessage.href"/></a>
+				<spring:message code="emptyMessage.end"/>
+			</p>
+		</c:if>
+
 		<c:forEach var="book" items="${books}">
 			<c:set var="book" value="${book}" scope="request" />
 			<jsp:include page="../templates/book-include.jsp" />
