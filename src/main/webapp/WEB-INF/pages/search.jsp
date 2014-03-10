@@ -43,6 +43,12 @@
 				<div class="form-group">
 					<label for="content-smpl"><spring:message code="bookContent"/></label>
 					<input name="content" type="text" class="form-control" id="content-smpl" placeholder="<spring:message code="bookContentPlaceholder"/>" value="${param.searchType == 'simple' ? fn:escapeXml(param.content) : ''}">
+					<c:if test="${not empty fn:trim(checkedContent)}">
+					<div class="did-you-mean">
+						Did you mean:
+						<a href="${contextPath}/search?content=${checkedLink}&searchType=simple">${checkedContent}</a>
+					</div>
+					</c:if>
 				</div>
 				<input name="searchType" type="hidden" value="simple">
 			</form>

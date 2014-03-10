@@ -1,6 +1,7 @@
 package ua.miratech.zhukov.repository;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -12,6 +13,8 @@ import java.util.List;
 
 @Repository
 public interface BookRepository extends CrudRepository<Book, String> {
+
+	Page<Book> findAll(Pageable pageable);
 
 	@Query("{ md5: ?0 }" )
 	Book findByMD5(String md5);

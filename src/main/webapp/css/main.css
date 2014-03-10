@@ -124,7 +124,7 @@ code {
 }
 
 .rm-user {
-	color: #ef2929;
+	color: #EF2929;
 	cursor: pointer;
 }
 
@@ -165,4 +165,9 @@ code {
 	border-top: 1px solid #DDDDDD;
 	margin-top: 25px;
 	padding-top: 12px;
+}
+
+.did-you-mean {
+	margin-top: 10px;
+	color: #EF2929;
 }

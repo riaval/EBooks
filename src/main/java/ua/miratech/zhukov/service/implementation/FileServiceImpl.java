@@ -12,6 +12,7 @@ import ua.miratech.zhukov.domain.Book;
 import ua.miratech.zhukov.domain.User;
 import ua.miratech.zhukov.dto.output.DownloadBook;
 import ua.miratech.zhukov.service.*;
+import ua.miratech.zhukov.util.component.factory.UnCompressCallableFactory;
 import ua.miratech.zhukov.util.thread.UnCompressCallable;
 import ua.miratech.zhukov.dto.UploadedFile;
 import ua.miratech.zhukov.util.component.EbookStorage;
@@ -39,6 +40,9 @@ public class FileServiceImpl implements FileService {
 
 	@Autowired
 	private ConverterService converterService;
+
+	@Autowired
+	private UnCompressCallableFactory unCompressCallableFactory;
 
 	@Autowired()
 	@Qualifier("executorService")
@@ -71,7 +75,9 @@ public class FileServiceImpl implements FileService {
 
 			User user = userService.getCurrentUser();
 			if ("application/zip".equals(uploadedFile.getType())) {
-				service.submit(new UnCompressCallable(this, uploadedFile, user));
+				service.submit(
+						unCompressCallableFactory.createUnCompressCallable(uploadedFile)
+				);
 			} else {
 				String id = bookService.addBook(uploadedFile, user);
 				uploadedFile.setDeleteUrl("/Ebooks/book/delete/" + id);

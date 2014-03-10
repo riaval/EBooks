@@ -7,6 +7,10 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.NodeList;
@@ -23,6 +27,7 @@ import ua.miratech.zhukov.repository.UserRepository;
 import ua.miratech.zhukov.service.*;
 import ua.miratech.zhukov.util.FictionBookParser;
 import ua.miratech.zhukov.util.component.EbookStorage;
+import ua.miratech.zhukov.util.component.factory.FictionBookParserFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -51,6 +56,9 @@ public class BookServiceImpl implements BookService {
 	private UserRepository userRepository;
 
 	@Autowired
+	FictionBookParserFactory fictionBookParserFactory;
+
+	@Autowired
 	@Qualifier("bookIndexerServiceImpl")
 	private BookIndexerService bookIndexerService;
 
@@ -67,7 +75,7 @@ public class BookServiceImpl implements BookService {
 		}
 
 		// Insert book to database
-		FictionBookParser fbp = new FictionBookParser(uf.getBytes());
+		FictionBookParser fbp = fictionBookParserFactory.createFictionBookParser(uf.getBytes());
 		Book book = new Book(
 				fbp.getAuthor(),
 				fbp.getTitle(),
@@ -108,7 +116,7 @@ public class BookServiceImpl implements BookService {
 		try {
 			fis = new FileInputStream(file);
 			byte[] bytes = IOUtils.toByteArray(fis);
-			FictionBookParser fbp = new FictionBookParser(bytes);
+			FictionBookParser fbp =  fictionBookParserFactory.createFictionBookParser(bytes);
 			content = fbp.getContent();
 		} catch (IOException e) {
 			logger.error(e);
@@ -142,6 +150,14 @@ public class BookServiceImpl implements BookService {
 	public List<Book> getLastBooks() {
 		ObjectId userObjectId = userService.getCurrentUserObjectId();
 
+		PageRequest page1 = new PageRequest(
+				0, 10, Sort.Direction.DESC, "publicationDate"
+		);
+
+		Page<Book> page = bookRepository.findAll(page1);
+		System.out.println(page.getContent().get(0).getTitle());
+
+//		return bookRepository.findAll(page1);
 		return bookRepository.findLastBooks(userObjectId);
 	}
 

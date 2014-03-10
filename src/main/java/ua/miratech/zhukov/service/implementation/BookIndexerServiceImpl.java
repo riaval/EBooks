@@ -23,6 +23,7 @@ import ua.miratech.zhukov.dto.IndexBook;
 import ua.miratech.zhukov.dto.controller.SearchedBook;
 import ua.miratech.zhukov.service.BookIndexerService;
 import ua.miratech.zhukov.util.component.EbookStorage;
+import ua.miratech.zhukov.util.component.factory.IndexCallableFactory;
 import ua.miratech.zhukov.util.thread.IndexCallable;
 
 import java.io.File;
@@ -57,6 +58,9 @@ public class BookIndexerServiceImpl implements BookIndexerService {
 	private EbookStorage ebookStorage;
 
 	@Autowired
+	private IndexCallableFactory indexCallableFactory;
+
+	@Autowired
 	@Qualifier("executorService")
 	private ExecutorService service;
 
@@ -75,7 +79,9 @@ public class BookIndexerServiceImpl implements BookIndexerService {
 				fileContent
 		);
 
-		service.submit(new IndexCallable(indexBook, this));
+		service.submit(
+				indexCallableFactory.createIndexCallable(indexBook)
+		);
 	}
 
 	@Override
@@ -172,7 +178,7 @@ public class BookIndexerServiceImpl implements BookIndexerService {
 		Field pathField = new StringField(fileNameTerm, book.getFileName(), Field.Store.YES);
 		doc.add(pathField);
 
-		doc.add(new TextField(content, new String(book.getContent()), Field.Store.YES));
+		doc.add(new TextField(content, new String(book.getContent(), "UTF-8"), Field.Store.YES));
 		doc.add(new TextField(title, book.getTitle(), Field.Store.YES));
 		doc.add(new TextField(author, book.getAuthor(), Field.Store.YES));
 		doc.add(new TextField(language, book.getLanguage(), Field.Store.YES));

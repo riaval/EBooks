@@ -23,4 +23,7 @@
     <!-- MongoDB -->
     <import resource="mongo-config.xml" />
 
+    <!-- Redis -->
+    <import resource="redis-config.xml" />
+
 </beans>

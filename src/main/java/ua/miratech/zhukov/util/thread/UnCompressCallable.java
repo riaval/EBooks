@@ -16,7 +16,7 @@ public class UnCompressCallable implements Callable<Boolean> {
 	private UploadedFile uploadedFile;
 	private User user;
 
-	public UnCompressCallable(FileServiceImpl fileService, UploadedFile uploadedFile, User user) {
+	public UnCompressCallable(FileService fileService, UploadedFile uploadedFile, User user) {
 		this.fileService = fileService;
 		this.uploadedFile = uploadedFile;
 		this.user = user;

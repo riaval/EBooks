@@ -59,7 +59,10 @@
 					</sec:authorize>
 					<sec:authorize access="isAuthenticated()">
 						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><sec:authentication property="principal.username" /><b class="caret"></b></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+								<span class="glyphicon glyphicon-user"></span>
+								<sec:authentication property="principal.username" /><b class="caret"></b>
+							</a>
 							<ul class="dropdown-menu">
 								<li><a href="${contextPath}/profile"><spring:message code="profile"/></a></li>
 								<li><a href="<c:url value="/j_spring_security_logout" />"><spring:message code="logout"/></a></li>

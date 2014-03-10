@@ -1,4 +1,4 @@
-<%@ page contentType="text/html" language="java" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -70,7 +70,7 @@
 		</div>
 		<div>
 			<strong>Published: </strong>
-			<fmt:formatDate value="${book.publicationDate}" pattern="dd-MM-yyyy: hh:mm" />
+			<fmt:formatDate value="${book.publicationDate}" pattern="dd.MM.yyyy" />
 		</div>
 
 		<p>

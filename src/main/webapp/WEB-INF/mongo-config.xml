@@ -11,12 +11,20 @@
     <!-- Factory bean that creates the Mongo instance -->
     <bean id="mongo" class="org.springframework.data.mongodb.core.MongoFactoryBean">
         <property name="host" value="localhost" />
+        <!--<property name="host" value="127.13.63.130" />-->
+        <!--<property name="port" value="27017" />-->
     </bean>
+
+    <!--<bean id="mongoCredentials" class="org.springframework.data.authentication.UserCredentials">-->
+        <!--<constructor-arg index="0" value="admin" />-->
+        <!--<constructor-arg index="1" value="uQmjvHmeDWf5" />-->
+    <!--</bean>-->
 
     <!-- MongoTemplate for connecting and quering the documents in the database -->
     <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
         <constructor-arg index="0" ref="mongo" />
-        <constructor-arg index="1" value="test" />
+        <constructor-arg index="1" value="ebooks" />
+        <!--<constructor-arg index="2" ref="mongoCredentials"/>-->
     </bean>
 
     <!-- Use this post processor to translate any MongoExceptions thrown in @Repository annotated classes -->
