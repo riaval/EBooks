@@ -2,6 +2,7 @@ package ua.miratech.zhukov.controller;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,6 @@ import java.io.IOException;
 import java.util.List;
 
 @Controller
-@RequestMapping("/search")
 public class SearchController {
 
 	@Autowired
@@ -24,17 +24,18 @@ public class SearchController {
 	@Autowired
 	SpellCheckerService spellCheckerService;
 
-	@RequestMapping(method = RequestMethod.GET)
+	@RequestMapping(value = "/search", method = RequestMethod.GET)
 	public String printSearchPage() {
 		return "search-tiles";
 	}
 
-	@RequestMapping(method = RequestMethod.GET, params = {"content"})
+	@RequestMapping(value = "/search/{page}", method = RequestMethod.GET, params = {"content"})
 	public String simpleSearch(
-			  ModelMap model
-			, @RequestParam(value = "content") String content
+			  ModelMap model,
+			  @RequestParam(value = "content") String content,
+			  @PathVariable("page") Integer pageNumber
 	) throws IOException, ParseException {
-		List<Book> books = bookService.doSimpleSearch(content);
+		Page<Book> books = bookService.doSimpleSearch(content, pageNumber - 1);
 		List<CheckedWord> words = spellCheckerService.check(content);
 
 		StringBuilder checkedContent = new StringBuilder();
@@ -50,20 +51,29 @@ public class SearchController {
 
 		}
 
-		model.addAttribute("books", books);
+		model.addAttribute("books", books.getContent());
+		model.addAttribute("totalPages", books.getTotalPages());
+		model.addAttribute("pageNumber", books.getNumber() + 1); // cause might return 0
 		model.addAttribute("checkedContent", checkedContent);
 		model.addAttribute("checkedLink", checkedLink);
 		return "search-tiles";
 	}
 
-	@RequestMapping(method = RequestMethod.GET, params = {"content", "title", "author", "language", "genre"})
+	@RequestMapping(
+			value = "/search/{page}",
+			method = RequestMethod.GET,
+			params = {"content", "title", "author", "language", "genre"}
+	)
 	public String extendedSearch(
-			  ModelMap model
-			, @ModelAttribute SearchedBook searchedBook
+			  ModelMap model,
+			  @ModelAttribute SearchedBook searchedBook,
+			  @PathVariable("page") Integer pageNumber
 	) throws IOException, ParseException {
-		List<Book> books = bookService.doExtendedSearch(searchedBook);
-		model.addAttribute("books", books);
+		Page<Book> books = bookService.doExtendedSearch(searchedBook, pageNumber - 1);
 
+		model.addAttribute("books", books.getContent());
+		model.addAttribute("totalPages", books.getTotalPages());
+		model.addAttribute("pageNumber", books.getNumber() + 1); // cause might return 0
 		return "search-tiles";
 	}
 

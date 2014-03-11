@@ -81,33 +81,4 @@ public class RedisTests {
 		}
 	}
 
-//	@Test
-//	public void redFileTest() {
-//		BufferedReader br = null;
-//
-//		try {
-//
-//			String sCurrentLine;
-//
-//			br = new BufferedReader(new FileReader("D:\\EBOOKS_STORAGE\\OWL.txt"));
-//			PrintWriter writer = new PrintWriter("D:\\EBOOKS_STORAGE\\NewOWL.txt", "UTF-8");
-//
-//			while ((sCurrentLine = br.readLine()) != null) {
-//				String arr[] = sCurrentLine.split(" ", 2);
-//				String firstWord = arr[0];
-//				writer.println(firstWord.toLowerCase());
-////				System.out.println(firstWord);
-//			}
-//			writer.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} finally {
-//			try {
-//				if (br != null)br.close();
-//			} catch (IOException ex) {
-//				ex.printStackTrace();
-//			}
-//		}
-//	}
-
 }

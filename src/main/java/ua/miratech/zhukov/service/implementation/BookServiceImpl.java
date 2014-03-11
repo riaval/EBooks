@@ -7,11 +7,7 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.NodeList;
 import ua.miratech.zhukov.domain.Book;
@@ -39,6 +35,8 @@ public class BookServiceImpl implements BookService {
 
 	private static final String defaultSharedType = "PRIVATE";
 	private static final Logger logger = Logger.getLogger(BookServiceImpl.class);
+
+	private static final int defaultPageSize = 5;
 
 	@Autowired
 	private BookRepository bookRepository;
@@ -140,25 +138,25 @@ public class BookServiceImpl implements BookService {
 	}
 
 	@Override
-	public List<Book> getMyBooks() {
+	public Page<Book> getMyBooks(int pageNumber) {
 		ObjectId userObjectId = userService.getCurrentUserObjectId();
 
-		return bookRepository.findBooksByOwner(userObjectId);
+		PageRequest page = new PageRequest(
+				pageNumber, defaultPageSize, Sort.Direction.DESC, "publicationDate"
+		);
+
+		return bookRepository.findBooksByOwner(userObjectId, page);
 	}
 
 	@Override
-	public List<Book> getLastBooks() {
+	public Page<Book> getLastBooks(int pageNumber) {
 		ObjectId userObjectId = userService.getCurrentUserObjectId();
 
-		PageRequest page1 = new PageRequest(
-				0, 10, Sort.Direction.DESC, "publicationDate"
+		PageRequest page = new PageRequest(
+				pageNumber, defaultPageSize, Sort.Direction.DESC, "publicationDate"
 		);
 
-		Page<Book> page = bookRepository.findAll(page1);
-		System.out.println(page.getContent().get(0).getTitle());
-
-//		return bookRepository.findAll(page1);
-		return bookRepository.findLastBooks(userObjectId);
+		return bookRepository.findLastBooks(userObjectId, page);
 	}
 
 	@Override
@@ -214,10 +212,6 @@ public class BookServiceImpl implements BookService {
 		users.add(granteeUser);
 
 		bookRepository.save(book);
-
-//		TODO Solve this problem
-//		throw new IllegalArgumentException("Owner and grantee is the same user");
-//		throw new IllegalArgumentException("Already shared");
 	}
 
 	@Override
@@ -243,7 +237,7 @@ public class BookServiceImpl implements BookService {
 	}
 
 	@Override
-	public List<Book> doSimpleSearch(String content) {
+	public Page<Book> doSimpleSearch(String content, int pageNumber) {
 		if (content == null || content.isEmpty()) {
 			return null;
 		}
@@ -255,11 +249,11 @@ public class BookServiceImpl implements BookService {
 			throw new RuntimeException(e.getMessage());
 		}
 
-		return getBooksFromStoredIndexes(storedIndexes);
+		return getBooksFromStoredIndexes(storedIndexes, pageNumber);
 	}
 
 	@Override
-	public List<Book> doExtendedSearch(SearchedBook searchedBook) {
+	public Page<Book> doExtendedSearch(SearchedBook searchedBook, int pageNumber) {
 		List<String> storedIndexes = null;
 		try {
 			storedIndexes = bookIndexerService.doExtendedSearch(searchedBook);
@@ -268,16 +262,20 @@ public class BookServiceImpl implements BookService {
 			throw new RuntimeException(e.getMessage());
 		}
 
-		return getBooksFromStoredIndexes(storedIndexes);
+		return getBooksFromStoredIndexes(storedIndexes, pageNumber);
 	}
 
-	private List<Book> getBooksFromStoredIndexes(List<String> storedIndexes) {
+	private Page<Book> getBooksFromStoredIndexes(List<String> storedIndexes, int pageNumber) {
 		if (storedIndexes.size() == 0) {
 			return null;
 		}
 		ObjectId userObjectId = userService.getCurrentUserObjectId();
 
-		return bookRepository.findBooksWithStoredIndexes(userObjectId, storedIndexes);
+		PageRequest pageRequest = new PageRequest(
+				pageNumber, defaultPageSize
+		);
+
+		return bookRepository.findBooksWithStoredIndexes(userObjectId, storedIndexes, pageRequest);
 	}
 
 	private Book checkWritePermissions(String bookId) {

@@ -16,4 +16,7 @@
 			<jsp:include page="../templates/book-include.jsp" />
 		</c:forEach>
 
+		<c:set var="currentPathe" value="${contextPath}" scope="request" />
+		<jsp:include page="../templates/pagination-include.jsp" />
+
 		<jsp:include page="../templates/users-modal-include.jsp" />

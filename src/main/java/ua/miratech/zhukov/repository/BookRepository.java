@@ -14,20 +14,29 @@ import java.util.List;
 @Repository
 public interface BookRepository extends CrudRepository<Book, String> {
 
-	Page<Book> findAll(Pageable pageable);
-
 	@Query("{ md5: ?0 }" )
 	Book findByMD5(String md5);
 
-	@Query("{ $query: { owner.$id: ?0 }, $orderby: { publicationDate : -1 } }")
-	List<Book> findBooksByOwner(ObjectId ownerId);
+	@Query("{ owner.$id: ?0 }")
+	Page<Book> findBooksByOwner(ObjectId ownerId, Pageable pageable);
 
-	@Query("{ $query: { $or: [ { sharedType: 'PUBLIC' }, " +
-			"{ $and: [ { sharedFor.$id: ?0 }, { sharedFor.$id: { $exists: true } } ] } ] }  }, $orderby: { publicationDate : -1 } }")
-	List<Book> findLastBooks(ObjectId currentUserId); //Pageable pageable
+	@Query("{ $or: [ " +
+				"{ sharedType: 'PUBLIC' }, " +
+				"{ $and: [ { sharedFor.$id: ?0 }, { sharedFor.$id: { $exists: true } } ] } " +
+			"] }")
+	Page<Book> findLastBooks(ObjectId currentUserId, Pageable pageable);
 
-	@Query("{ $and: [ { storedIndex: { $in: ?1 } }," +
-			" { $or: [ { sharedType: 'PUBLIC' }, { owner.$id: ?0 }, { $and: [ { sharedFor.$id: ?0 }, { sharedFor.$id: { $exists: true } } ] } ] }   ] } ] }")
-	List<Book> findBooksWithStoredIndexes(ObjectId currentUserId, List<String> storedIndexes);
+	@Query("{ $and: [ " +
+				"{ storedIndex: { $in: ?1 } }, " +
+				"{ $or: [ " +
+					"{ sharedType: 'PUBLIC' }, " +
+					"{ owner.$id: ?0 }, " +
+					"{ $and: [ " +
+						"{ sharedFor.$id: ?0 }, " +
+						"{ sharedFor.$id: { $exists: true } } " +
+					"] } " +
+				"] } " +
+			"] }")
+	Page<Book> findBooksWithStoredIndexes(ObjectId currentUserId, List<String> storedIndexes, Pageable pageable);
 
 }

@@ -1,5 +1,6 @@
 package ua.miratech.zhukov.service;
 
+import org.springframework.data.domain.Page;
 import ua.miratech.zhukov.domain.Book;
 import ua.miratech.zhukov.domain.User;
 import ua.miratech.zhukov.dto.UploadedFile;
@@ -20,11 +21,13 @@ public interface BookService {
 
 	void unShareBook(String bookId, String granteeId);
 
+	Page<Book> getMyBooks(int pageNumber);
+
+	Page<Book> getLastBooks(int pageNumber);
+
 	void deleteBook(String bookId) throws IOException;
 
 	void updateBook(EditedBook book);
-
-	List<Book> getLastBooks();
 
 	String addBook(UploadedFile uf, User user) throws IOException;
 
@@ -32,11 +35,9 @@ public interface BookService {
 
 	Book getBookForEditing(String bookId);
 
-	List<Book> getMyBooks();
-
 	DownloadBook downloadBook(String bookId);
 
-	List<Book> doSimpleSearch(String content);
+	Page<Book> doSimpleSearch(String content, int pageNumber);
 
-	List<Book> doExtendedSearch(SearchedBook searchedBook);
+	Page<Book> doExtendedSearch(SearchedBook searchedBook, int pageNumber);
 }

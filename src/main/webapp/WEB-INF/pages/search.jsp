@@ -7,6 +7,8 @@
 	<sec:authentication var="user" property="principal.username" />
 </sec:authorize>
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+<c:set var="currentParameters" value="${pageContext.request.queryString}" scope="request" />
+<c:set var="currentPath" value="${contextPath}/search/" scope="request" />
 
 <script type="text/javascript">
 	$(document).ready(function() {
@@ -39,7 +41,7 @@
 	</ul>
 	<div class="tab-content" id="searchContent">
 		<div id="search-simple" class="tab-pane fade ${param.searchType == 'extended' ? '' : 'active in'}">
-			<form method="GET" action="${contextPath}/search">
+			<form method="GET" action="${contextPath}/search/1">
 				<div class="form-group">
 					<label for="content-smpl"><spring:message code="bookContent"/></label>
 					<input name="content" type="text" class="form-control" id="content-smpl" placeholder="<spring:message code="bookContentPlaceholder"/>" value="${param.searchType == 'simple' ? fn:escapeXml(param.content) : ''}">
@@ -64,10 +66,11 @@
 						<jsp:include page="../templates/book-include.jsp" />
 					</c:forEach>
 				</div>
+				<jsp:include page="../templates/pagination-search-include.jsp" />
 			</c:if>
 		</div>
 		<div id="search-extended" class="tab-pane fade ${param.searchType == 'extended' ? 'active in' : ''}">
-			<form method="GET" action="${contextPath}/search">
+			<form method="GET" action="${contextPath}/search/1">
 				<div class="row">
 					<div class="col-md-7">
 						<label for="content-ext"><spring:message code="bookContent"/></label>
@@ -96,16 +99,17 @@
 			</form>
 
 			<c:if test="${param.searchType == 'extended'}">
-			<div class="search-result">
-				<c:if test="${empty books}">
-					<p class="lead"><spring:message code="nothingFound"/></p>
-				</c:if>
+				<div class="search-result">
+					<c:if test="${empty books}">
+						<p class="lead"><spring:message code="nothingFound"/></p>
+					</c:if>
 
-				<c:forEach var="book" items="${books}">
-					<c:set var="book" value="${book}" scope="request" />
-					<jsp:include page="../templates/book-include.jsp" />
-				</c:forEach>
-			</div>
+					<c:forEach var="book" items="${books}">
+						<c:set var="book" value="${book}" scope="request" />
+						<jsp:include page="../templates/book-include.jsp" />
+					</c:forEach>
+				</div>
+				<jsp:include page="../templates/pagination-search-include.jsp" />
 			</c:if>
 		</div>
 	</div>
