@@ -6,15 +6,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.EscapedErrors;
-import ua.miratech.zhukov.util.component.CreatedUserValidator;
 import ua.miratech.zhukov.domain.Book;
 import ua.miratech.zhukov.domain.User;
 import ua.miratech.zhukov.dto.controller.CreatedUser;
 import ua.miratech.zhukov.dto.controller.EditedUser;
-import ua.miratech.zhukov.repository.BookRepository;
-import ua.miratech.zhukov.repository.UserRepository;
+import ua.miratech.zhukov.repository.mongodb.BookRepository;
+import ua.miratech.zhukov.repository.mongodb.UserRepository;
 import ua.miratech.zhukov.service.UserService;
 
 import java.util.Calendar;

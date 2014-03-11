@@ -11,6 +11,7 @@ import ua.miratech.zhukov.dto.CheckedWord;
 import ua.miratech.zhukov.dto.controller.SearchedBook;
 import ua.miratech.zhukov.service.BookService;
 import ua.miratech.zhukov.service.SpellCheckerService;
+import ua.miratech.zhukov.service.implementation.SpellCheckerServiceImpl;
 
 import java.io.IOException;
 import java.util.List;

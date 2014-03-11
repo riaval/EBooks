@@ -1,4 +1,4 @@
-package ua.miratech.zhukov.redis;
+package ua.miratech.zhukov.repository.redis;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

@@ -1,33 +1,26 @@
 package ua.miratech.zhukov;
 
+import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ua.miratech.zhukov.redis.DictionaryRepository;
+import ua.miratech.zhukov.repository.redis.DictionaryRepository;
 import ua.miratech.zhukov.util.DamerauLevenshtein;
 import ua.miratech.zhukov.util.PhoneticCode;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"file:src/main/webapp/WEB-INF/redis-config.xml"})
-public class RedisTests {
+public class SpellCheckerServiceTest {
 
 	@Autowired
 	DictionaryRepository dictionaryRepository;
 
 	@Test
-	public void connectionTest() {
-		long startTime = System.currentTimeMillis();
+	public void spellTest() {
 		String source = "thausend";
 		String rightWord;
 
@@ -45,40 +38,9 @@ public class RedisTests {
 				shortestDistance = distances[i];
 				shortestIndex = i;
 			}
-			System.out.println(words.get(shortestIndex) + " " + distances[i]);
 		}
 		rightWord = words.get(shortestIndex);
-		long endTime = System.currentTimeMillis();
-		long duration = endTime - startTime;
-		System.out.println("That took " + duration + " milliseconds");
-		System.out.println(rightWord);
-	}
-
-//	@Test
-	public void redFileTest() {
-		BufferedReader br = null;
-
-		try {
-
-			String sCurrentLine;
-
-			br = new BufferedReader(new FileReader("D:\\EBOOKS_STORAGE\\dictionary.txt"));
-
-			while ((sCurrentLine = br.readLine()) != null) {
-				dictionaryRepository.put(PhoneticCode.metaPhone(sCurrentLine), sCurrentLine);
-//				System.out.println(PhoneticCode.metaPhone(sCurrentLine));
-//				System.out.println(sCurrentLine);
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (br != null) br.close();
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
-		}
+		Assert.assertEquals(rightWord, "thousand");
 	}
 
 }

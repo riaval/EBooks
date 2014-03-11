@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import ua.miratech.zhukov.domain.User;
-import ua.miratech.zhukov.repository.UserRepository;
+import ua.miratech.zhukov.repository.mongodb.UserRepository;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -5,22 +5,22 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 public class CreatedUser {
 
-//	@NotEmpty
-//	@Length(min=5,max=30)
+	@NotEmpty
+	@Length(min=5,max=30)
 	private String email;
 
-//	@NotEmpty
+	@NotEmpty
 	private String firstName;
 
-//	@NotEmpty
+	@NotEmpty
 	private String lastName;
 
-//	@NotEmpty
-//	@Length(min=6,max=30)
+	@NotEmpty
+	@Length(min=6,max=30)
 	private String password;
 
-//	@NotEmpty
-//	@Length(min=6,max=30)
+	@NotEmpty
+	@Length(min=6,max=30)
 	private String passwordAgain;
 
 	public String getEmail() {

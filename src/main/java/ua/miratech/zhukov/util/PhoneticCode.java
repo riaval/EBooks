@@ -1,4 +1,4 @@
-/*                                                     PhoneticCode.java
+/* PhoneticCode.java
  * A class to generate phonetic code using the Metaphone algorithm.
  * reference: Computer Language of Dec. 1990, p 39
  *  "Hanging on the Metaphone" by Lawrence Philips

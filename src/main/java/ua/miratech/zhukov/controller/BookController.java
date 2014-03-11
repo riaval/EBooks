@@ -17,8 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Прямая связь с readBook.jsp
- * Контроллер для управления книгой на странице чтения
+ * Controller for readBook.jsp
  */
 @Controller
 public class BookController {
@@ -27,11 +26,11 @@ public class BookController {
 	private BookService bookService;
 
 	/**
-	 * Отображает страницу с книгой для чтения
+	 * Shows page with text of book
 	 *
-	 * @param bookId ID книги
-	 * @param model Модель для JSP страницы
-	 * @return Apache Tiles ссылку на страницу чтения
+	 * @param bookId Book ID
+	 * @param model Model for JSP
+	 * @return Apache Tiles link
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/book/{bookId}", method = RequestMethod.GET)
@@ -43,11 +42,11 @@ public class BookController {
 	}
 
 	/**
-	 * Позволяет скачать файл из файлохранилища
+	 * Allows to download file from File Storage
 	 *
-	 * @param bookId ID книги
-	 * @param response {@link javax.servlet.http.HttpServletRequest} Ответ сервера
-	 * @return Файл из хранилища с оригинальным названием
+	 * @param bookId Book ID
+	 * @param response {@link javax.servlet.http.HttpServletRequest} Server response
+	 * @return File with original name
 	 */
 	@RequestMapping(value = "/file/{bookId}", method = RequestMethod.GET, produces = {
 			MediaType.APPLICATION_OCTET_STREAM_VALUE
@@ -62,11 +61,11 @@ public class BookController {
 	}
 
 	/**
-	 * Позволяет удалить книгу с сервиса
+	 * Allows to delete book
 	 *
-	 * @param bookId ID книги
-	 * @param request {@link javax.servlet.http.HttpServletRequest} Ответ сервера
-	 * @return Redirect на предыдущую страницу
+	 * @param bookId Book ID
+	 * @param request {@link javax.servlet.http.HttpServletRequest} Server response
+	 * @return Redirect before page
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/book/delete/{bookId}", method = RequestMethod.GET)
@@ -78,9 +77,9 @@ public class BookController {
 	}
 
 	/**
-	 * Предоставляет интерфейс для удаления книги с сервиса
+	 * Provides interface that allows to delete book
 	 *
-	 * @param bookId ID книги
+	 * @param bookId Book ID
 	 * @throws IOException
 	 */
 	@RequestMapping(value = "/book/delete/{bookId}", method = RequestMethod.DELETE)
@@ -90,10 +89,10 @@ public class BookController {
 	}
 
 	/**
-	 * Позволяет изменить параметры доступа к книге, public-private
+	 * Provides to change access settings for book (public-private)
 	 *
-	 * @param bookId ID книги
-	 * @param type Новый тип доступа (public или private)
+	 * @param bookId Book ID
+	 * @param type New access type (public или private)
 	 */
 	@RequestMapping(value = "/book/{bookId}", method = RequestMethod.POST, params = {"type"})
 	@ResponseStatus(value = HttpStatus.OK)
@@ -112,10 +111,10 @@ public class BookController {
 	}
 
 	/**
-	 * Позволяет расшарить права доступа к книги другому пользователю
+	 * Allows to share book between users
 	 *
-	 * @param bookId ID книги
-	 * @param email Email пользователя которому предоставляют доступ
+	 * @param bookId Book ID
+	 * @param email Grantee User email
 	 */
 	@RequestMapping(value = "/book/share/{bookId}", method = RequestMethod.POST, params = {"email"})
 	@ResponseStatus(value = HttpStatus.CREATED)
@@ -124,10 +123,10 @@ public class BookController {
 	}
 
 	/**
-	 * Позволяет убрать предоставленные права доступа к книге
+	 * Allows to remove sharing from book
 	 *
-	 * @param bookId ID книги
-	 * @param granteeId Id пользователя, которому был предоставлен доступ
+	 * @param bookId Book ID
+	 * @param granteeId Granted User ID
 	 */
 	@RequestMapping(value = "/books/{bookId}/users/{granteeId}/delete", method = RequestMethod.POST)
 	@ResponseStatus(value = HttpStatus.OK)

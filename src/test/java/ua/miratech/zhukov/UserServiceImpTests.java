@@ -12,8 +12,8 @@ import ua.miratech.zhukov.domain.Book;
 import ua.miratech.zhukov.domain.User;
 import ua.miratech.zhukov.dto.controller.EditedUser;
 import ua.miratech.zhukov.dto.enums.SharedType;
-import ua.miratech.zhukov.repository.BookRepository;
-import ua.miratech.zhukov.repository.UserRepository;
+import ua.miratech.zhukov.repository.mongodb.BookRepository;
+import ua.miratech.zhukov.repository.mongodb.UserRepository;
 import ua.miratech.zhukov.service.UserService;
 import ua.miratech.zhukov.service.implementation.UserServiceImpl;
 
