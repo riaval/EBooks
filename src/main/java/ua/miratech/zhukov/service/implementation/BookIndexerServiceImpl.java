@@ -65,7 +65,7 @@ public class BookIndexerServiceImpl implements BookIndexerService {
 	private ExecutorService service;
 
 	@Override
-	public void indexFile(byte[] fileContent, Book book) throws IOException {
+	public void createIndex(byte[] fileContent, Book book) throws IOException {
 		IndexBook indexBook = new IndexBook(
 				book.getAuthor(),
 				book.getTitle(),

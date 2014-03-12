@@ -98,7 +98,7 @@ public class BookServiceImpl implements BookService {
 			fileService.saveFile(uf.getBytes(), book);
 
 			// Index file
-			bookIndexerService.indexFile(uf.getBytes(), book);
+			bookIndexerService.createIndex(uf.getBytes(), book);
 		}
 
 		return book.getId();
